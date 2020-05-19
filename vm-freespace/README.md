@@ -139,7 +139,7 @@ coalesced as expected.
 There are some other interesting options to explore:
 
 * `-p BEST` or `-p WORST` or `-p FIRST`: This option lets you use these three different strategies to look for a chunk of memory to use during an allocation request 
-* `-l ADDRSORT` or `-l SIZESORT+' or `-l SIZESORT-` or `-l INSERT-FRONT` or `-l INSERT-BACK`: This option lets you keep the free list in a particular order, say sorted by address of the free chunk, size of free chunk (either increasing with a + or decreasing with a -), or simply returning free chunks to the front (INSERT-FRONT) or back (INSERT-BACK) of the free list.
+* `-l ADDRSORT` or `-l SIZESORT+` or `-l SIZESORT-` or `-l INSERT-FRONT` or `-l INSERT-BACK`: This option lets you keep the free list in a particular order, say sorted by address of the free chunk, size of free chunk (either increasing with a + or decreasing with a -), or simply returning free chunks to the front (INSERT-FRONT) or back (INSERT-BACK) of the free list.
 * `-A list_of_ops`: This option lets you specify an exact series of requests instead of randomly-generated ones. For example, running with the flag "-A +10,+10,+10,-0,-2" will allocate three chunks of size 10 bytes (plus header), and then free the first one ("-0") and then free the third one ("-2"). What will the free list look like then?
 
 Those are the basics. Use the questions from the book chapter to explore more,
