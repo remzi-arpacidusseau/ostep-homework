@@ -1,8 +1,10 @@
 #! /usr/bin/env python
 
+from __future__ import print_function
 import sys
 from optparse import OptionParser
 import random
+
 
 # process switch behavior
 SCHED_SWITCH_ON_IO = 'SWITCH_ON_IO'
