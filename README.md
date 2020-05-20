@@ -4,6 +4,7 @@
 # Virtualization
 
 Chapter | What To Do
+--------|-----------
 [Abstraction: Processes](http://www.cs.wisc.edu/~remzi/OSTEP/cpu-intro.pdf) | [process-run.py](cpu-intro)
 [Process API](http://www.cs.wisc.edu/~remzi/OSTEP/cpu-api.pdf) | Write some code
 [Direct Execution](http://www.cs.wisc.edu/~remzi/OSTEP/cpu-mechanisms.pdf) | Write some code
