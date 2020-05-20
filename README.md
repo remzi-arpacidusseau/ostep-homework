@@ -46,8 +46,3 @@
 * [Distributed Intro]() - Write some code
 * [NFS]() - Write some analysis code
 * [AFS]() - afs.py
-
-
-AFS	 	PDF	 	Video	 	Run afs.py
-
-
