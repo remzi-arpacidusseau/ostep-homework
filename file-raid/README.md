@@ -70,8 +70,10 @@ In this case, calculating the answers is easy: in RAID-0, recall that the
 underlying disk and offset that services a request is calculated via modulo
 arithmetic: 
 
-> disk   = address % number_of_disks
-> offset = address / number_of_disks
+```sh
+disk   = address % number_of_disks
+offset = address / number_of_disks
+```
 
 Thus, the first request to 16 should be serviced by disk 0, at offset 4. And
 so forth.  You can, as usual see the answers (once you've computed them!), by
