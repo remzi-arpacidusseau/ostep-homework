@@ -31,14 +31,14 @@ Chapter | What To Do
 
 Chapter | What To Do
 --------|-----------
-* [Threads Intro]() -	Run x86.py
-* [Thread API]()	- Run main-BLANK.c
-* [Locks]()	- Run x86.py
-* [Lock Usage]() -	Write some code
-* [Condition Variables)]()	- Run main-BLANK.c
-* [Semaphores]() - Write some code
-* [Concurrency Bugs]() - Run vector-BLANK.c
-* [Event-based Concurrency]() - Write some code
+[Threads Intro]() |	Run x86.py
+[Thread API]()	| Run main-BLANK.c
+[Locks]()	| Run x86.py
+[Lock Usage]() | Write some code
+[Condition Variables)]() | Run main-BLANK.c
+[Semaphores]() | Write some code
+[Concurrency Bugs]() | Run vector-BLANK.c
+[Event-based Concurrency]() | Write some code
 
 # Persistence
 
