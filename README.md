@@ -29,6 +29,8 @@ Chapter | What To Do
 
 # Concurrency
 
+Chapter | What To Do
+--------|-----------
 * [Threads Intro]() -	Run x86.py
 * [Thread API]()	- Run main-BLANK.c
 * [Locks]()	- Run x86.py
@@ -40,15 +42,17 @@ Chapter | What To Do
 
 # Persistence
 
-* [Hard Disk Drives]() - Run disk.py
-* [RAID]() - raid.py
-* [FS Intro]() - Write some code
-* [FS Implementation]() - vsfs.py
-* [Fast File System]() - ffs.py
-* [Crash Consistency and Journaling]() - fsck.py
-* [Log-Structured File Systems]() - lfs.py
-* [Solid-State Disk Drives]() - ssd.py
-* [Data Integrity]() - checksum.py and Write some code
-* [Distributed Intro]() - Write some code
-* [NFS]() - Write some analysis code
-* [AFS]() - afs.py
+Chapter | What To Do
+--------|-----------
+[Hard Disk Drives](http://www.cs.wisc.edu/~remzi/OSTEP/file-disks.pdf) | Run disk.py
+[RAID](http://www.cs.wisc.edu/~remzi/OSTEP/file-raid.pdf) Run [raid.py](file-raid)
+[FS Intro](http://www.cs.wisc.edu/~remzi/OSTEP/file-intro.pdf) | Write some code
+[FS Implementation](http://www.cs.wisc.edu/~remzi/OSTEP/file-implementation.pdf) | vsfs.py
+[Fast File System](http://www.cs.wisc.edu/~remzi/OSTEP/file-ffs.pdf) | ffs.py
+[Crash Consistency and Journaling](http://www.cs.wisc.edu/~remzi/OSTEP/file-journaling.pdf) | fsck.py
+[Log-Structured File Systems](http://www.cs.wisc.edu/~remzi/OSTEP/file-lfs.pdf) | lfs.py
+[Solid-State Disk Drives](http://www.cs.wisc.edu/~remzi/OSTEP/file-ssd.pdf) | ssd.py
+[Data Integrity](http://www.cs.wisc.edu/~remzi/OSTEP/file-integrity.pdf) | checksum.py and Write some code
+[Distributed Intro](http://www.cs.wisc.edu/~remzi/OSTEP/dist-intro.pdf) | Write some code
+[NFS](http://www.cs.wisc.edu/~remzi/OSTEP/dist-nfs.pdf) | Write some analysis code
+[AFS](http://www.cs.wisc.edu/~remzi/OSTEP/dist-afs.pdf) | afs.py
