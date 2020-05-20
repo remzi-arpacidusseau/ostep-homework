@@ -23,28 +23,31 @@
 
 # Concurrency
 
-Threads (Intro)	 	PDF	 	Video	 	Run x86.py
-Threads (API)	 	PDF	 	Video	 	Run main-*.c
-(Locks)	 	PDF	 	Video	 	Run x86.py
-Threads (Locks Usage)	 	PDF	 	Video	 	Write some code
-Threads (CVs)	 	PDF	 	Video	 	Run main-*.c
-Threads (Semaphores)	 	PDF	 	Video	 	Write some code
-Threads (Bugs)	 	PDF	 	Video	 	Run vector-*.c
-Threads (Events)	 	PDF	 	Video	 	Write some code
+* [Threads Intro]() -	Run x86.py
+* [Thread API]()	- Run main-BLANK.c
+* [Locks]()	- Run x86.py
+* [Lock Usage]() -	Write some code
+* [Condition Variables)]()	- Run main-BLANK.c
+* [Semaphores]() - Write some code
+* [Concurrency Bugs]() - Run vector-BLANK.c
+* [Event-based Concurrency]() - Write some code
 
 # Persistence
 
-Disks	 	PDF	 	Video	 	Run disk.py
-RAID	 	PDF	 	Video	 	Run raid.py
-FS Intro	 	PDF	 	Video	 	Write some code
-FS Implement	 	PDF	 	Video	 	Run vsfs.py
-FFS	 	PDF	 	Video	 	Run ffs.py
-Journaling	 	PDF	 	Video	 	Run fsck.py
-LFS	 	PDF	 	Video	 	Run lfs.py
-SSDs	 	PDF	 	Video	 	Run ssd.py
-Integrity	 	PDF	 	Video	 	Run checksum.py and Write some code
-Distributed Intro	 	PDF	 	Video	 	Write some code
-NFS	 	PDF	 	Video	 	Download this and Write some analysis code
+* [Hard Disk Drives]() - Run disk.py
+* [RAID]() - raid.py
+* [FS Intro]() - Write some code
+* [FS Implementation]() - vsfs.py
+* [Fast File System]() - ffs.py
+* [Crash Consistency and Journaling]() - fsck.py
+* [Log-Structured File Systems]() - lfs.py
+* [Solid-State Disk Drives]() - ssd.py
+* [Data Integrity]() - checksum.py and Write some code
+* [Distributed Intro]() - Write some code
+* [NFS]() - Write some analysis code
+* [AFS]() - afs.py
+
+
 AFS	 	PDF	 	Video	 	Run afs.py
 
 
