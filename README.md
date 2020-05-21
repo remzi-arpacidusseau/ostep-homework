@@ -3,7 +3,7 @@
 
 Each chapter has some questions at the end; we call these "homeworks", because you should do the "work" at your "home". Make sense? It's one of the innovations of this book.
 
-Thus, your task: read a chapter, then come back here and do the homework. Some require a simulator (written in Python); those are available by clicking below. Some others require you to write some code. Still others require some other stuff (you'll figure it out).
+Thus, your task: read a chapter, look at the questions at the end of the chapter, and try to answer them by doing the homework. Some require a simulator (written in Python); those are available by clicking below. Some others require you to write some code. Still others require some other stuff (you'll figure it out).
 
 # Virtualization
 
