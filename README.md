@@ -3,7 +3,7 @@
 
 Each chapter has some questions at the end; we call these "homeworks", because you should do the "work" at your "home". Make sense? It's one of the innovations of this book.
 
-Thus, your task: read a chapter, then come back here and do the homework. Some require a simulator (written in Python); those are available by clicking below. Some others require you to write some code. Still others require some other stuff (you'll figure it out).
+Thus, your task: read a chapter, look at the questions at the end of the chapter, and try to answer them by doing the homework. Some require a simulator (written in Python); those are available by clicking below. Some others require you to write some code. Still others require some other stuff (you'll figure it out).
 
 # Virtualization
 
@@ -24,21 +24,21 @@ Chapter | What To Do
 [Paging](http://www.cs.wisc.edu/~remzi/OSTEP/vm-paging.pdf) | Run [paging-linear-translate.py](vm-paging)
 [TLBs]() | Write some code
 [Multi-level Paging](http://www.cs.wisc.edu/~remzi/OSTEP/vm-smalltables.pdf) | Run [paging-multilevel-translate.py](vm-smalltables)
-[Paging Mechanism](http://www.cs.wisc.edu/~remzi/OSTEP/vm-beyondphys.pdf) | Run mem.c
+[Paging Mechanism](http://www.cs.wisc.edu/~remzi/OSTEP/vm-beyondphys.pdf) | Run [mem.c](vm-beyondphys)
 [Paging Policy](http://www.cs.wisc.edu/~remzi/OSTEP/vm-beyondphys-policy.pdf) | Run [paging-policy.py](vm-beyondphys-policy)
 
 # Concurrency
 
 Chapter | What To Do
 --------|-----------
-[Threads Intro]() |	Run x86.py
-[Thread API]()	| Run main-BLANK.c
-[Locks]()	| Run x86.py
-[Lock Usage]() | Write some code
-[Condition Variables)]() | Run main-BLANK.c
-[Semaphores]() | Write some code
-[Concurrency Bugs]() | Run vector-BLANK.c
-[Event-based Concurrency]() | Write some code
+[Threads Intro](http://www.cs.wisc.edu/~remzi/OSTEP/threads-intro.pdf) |	Run x86.py
+[Thread API](http://www.cs.wisc.edu/~remzi/OSTEP/threads-api.pdf)	| Run main-BLANK.c
+[Locks](http://www.cs.wisc.edu/~remzi/OSTEP/threads-locks.pdf)	| Run x86.py
+[Lock Usage](http://www.cs.wisc.edu/~remzi/OSTEP/threads-locks-usage.pdf) | Write some code
+[Condition Variables)](http://www.cs.wisc.edu/~remzi/OSTEP/threads-cv.pdf) | Run main-BLANK.c
+[Semaphores](http://www.cs.wisc.edu/~remzi/OSTEP/threads-sema.pdf) | Write some code
+[Concurrency Bugs](http://www.cs.wisc.edu/~remzi/OSTEP/threads-bugs.pdf) | Run vector-BLANK.c
+[Event-based Concurrency](http://www.cs.wisc.edu/~remzi/OSTEP/threads-events.pdf) | Write some code
 
 # Persistence
 
