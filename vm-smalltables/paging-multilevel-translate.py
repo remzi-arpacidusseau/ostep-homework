@@ -43,7 +43,7 @@ class OS:
         # os tracks
         self.usedPages      = []
         self.usedPagesCount = 0
-        self.maxPageCount   = self.physMem / self.pageSize
+        self.maxPageCount   = self.physMem // self.pageSize
 
         # no pages used (yet)
         for i in range(0, self.maxPageCount):
@@ -186,7 +186,7 @@ class OS:
         print('')
 
     def memoryDump(self):
-        for i in range(0, self.physMem / self.pageSize):
+        for i in range(0, self.maxPageCount):
             print('page %3d:' %  i, end='')
             for j in range(0, self.pageSize):
                 print('%02x' % self.memory[(i * self.pageSize) + j], end='')
