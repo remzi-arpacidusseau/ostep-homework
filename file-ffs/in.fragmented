@@ -1,0 +1,13 @@
+file /a 1
+file /b 1
+file /c 1
+file /d 1
+file /e 1
+file /f 1
+file /g 1
+file /h 1
+delete /a
+delete /c
+delete /e
+delete /g
+file /i 8
