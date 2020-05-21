@@ -31,14 +31,14 @@ Chapter | What To Do
 
 Chapter | What To Do
 --------|-----------
-[Threads Intro]() |	Run x86.py
-[Thread API]()	| Run main-BLANK.c
-[Locks]()	| Run x86.py
-[Lock Usage]() | Write some code
-[Condition Variables)]() | Run main-BLANK.c
-[Semaphores]() | Write some code
-[Concurrency Bugs]() | Run vector-BLANK.c
-[Event-based Concurrency]() | Write some code
+[Threads Intro](http://www.cs.wisc.edu/~remzi/OSTEP/threads-intro.pdf) |	Run x86.py
+[Thread API](http://www.cs.wisc.edu/~remzi/OSTEP/threads-api.pdf)	| Run main-BLANK.c
+[Locks](http://www.cs.wisc.edu/~remzi/OSTEP/threads-locks.pdf)	| Run x86.py
+[Lock Usage](http://www.cs.wisc.edu/~remzi/OSTEP/threads-locks-usage.pdf) | Write some code
+[Condition Variables)](http://www.cs.wisc.edu/~remzi/OSTEP/threads-cv.pdf) | Run main-BLANK.c
+[Semaphores](http://www.cs.wisc.edu/~remzi/OSTEP/threads-sema.pdf) | Write some code
+[Concurrency Bugs](http://www.cs.wisc.edu/~remzi/OSTEP/threads-bugs.pdf) | Run vector-BLANK.c
+[Event-based Concurrency](http://www.cs.wisc.edu/~remzi/OSTEP/threads-events.pdf) | Write some code
 
 # Persistence
 
