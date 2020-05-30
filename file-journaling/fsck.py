@@ -12,7 +12,14 @@ def dprint(str):
     if DEBUG:
         print(str)
 
-# to make Python2 and Python3 act the same -- how dumb        
+# to make Python2 and Python3 act the same -- how dumb
+def random_seed(seed):
+    try:
+        random.seed(seed, version=1)
+    except:
+        random.seed(seed)
+    return
+
 def random_randint(low, hi):
     return int(low + random.random() * (hi - low + 1))
 
@@ -516,7 +523,7 @@ class fs:
     # data bitmap   1001001000000000
     # data          [(.,0) (..,0) (v,2) (d,2) (e,2) (n,2) (s,5)] [] [] [(.,5) (..,0) (w,3) (k,1)] [] [] [t] [] [] [] [] [] [] [] [] []
     def corrupt(self, whichCorrupt):
-        random.seed(self.seedCorrupt)
+        random_seed(self.seedCorrupt)
         num = random_randint(0, 11)
         # print('RANDINT', num)
         if whichCorrupt != -1:
@@ -697,11 +704,8 @@ print('ARG whichCorrupt',options.whichCorrupt)
 print('ARG dontCorrupt', options.dontCorrupt)
 print('')
 
-# to make Python2 and Python3 act the same -- how dumb        
-if (sys.version_info > (3, 0)):
-    random.seed(options.seed, version=1)
-else:
-    random.seed(options.seed)
+# to make Python2 and Python3 act the same -- how dumb
+random_seed(options.seed)
 
 printState = False
 printOps   = False
