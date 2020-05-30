@@ -51,7 +51,7 @@ Chapter | What To Do
 [Fast File System](http://www.cs.wisc.edu/~remzi/OSTEP/file-ffs.pdf) | RUn [ffs.py](file-ffs)
 [Crash Consistency and Journaling](http://www.cs.wisc.edu/~remzi/OSTEP/file-journaling.pdf) | Run [fsck.py](file-journaling)
 [Log-Structured File Systems](http://www.cs.wisc.edu/~remzi/OSTEP/file-lfs.pdf) | Run [lfs.py](file-lfs)
-[Solid-State Disk Drives](http://www.cs.wisc.edu/~remzi/OSTEP/file-ssd.pdf) | ssd.py
+[Solid-State Disk Drives](http://www.cs.wisc.edu/~remzi/OSTEP/file-ssd.pdf) | Run [ssd.py](file-ssd)
 [Data Integrity](http://www.cs.wisc.edu/~remzi/OSTEP/file-integrity.pdf) | checksum.py and Write some code
 [Distributed Intro](http://www.cs.wisc.edu/~remzi/OSTEP/dist-intro.pdf) | Write some code
 [NFS](http://www.cs.wisc.edu/~remzi/OSTEP/dist-nfs.pdf) | Write some analysis code
