@@ -5,6 +5,14 @@ import math
 import random
 from optparse import OptionParser
 
+# to make Python2 and Python3 act the same -- how dumb
+def random_seed(seed):
+    try:
+        random.seed(seed, version=1)
+    except:
+        random.seed(seed)
+    return
+
 # minimum unit of transfer to RAID
 BLOCKSIZE = 4096
 
@@ -388,7 +396,7 @@ print('')
 writeFrac = float(options.writeFrac) / 100.0
 assert(writeFrac >= 0.0 and writeFrac <= 1.0)
 
-random.seed(options.seed)
+random_seed(options.seed)
 
 size = convert(options.size)
 if size % BLOCKSIZE != 0:

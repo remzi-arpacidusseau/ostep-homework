@@ -6,6 +6,14 @@ from optparse import OptionParser
 import random
 import math
 
+# to make Python2 and Python3 act the same -- how dumb
+def random_seed(seed):
+    try:
+        random.seed(seed, version=1)
+    except:
+        random.seed(seed)
+    return
+
 def convert(size):
     length = len(size)
     lastchar = size[length-1]
@@ -44,7 +52,7 @@ print('ARG address space size', options.asize)
 print('ARG phys mem size', options.psize)
 print('')
 
-random.seed(options.seed)
+random_seed(options.seed)
 asize = convert(options.asize)
 psize = convert(options.psize)
 

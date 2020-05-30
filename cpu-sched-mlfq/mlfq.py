@@ -5,6 +5,14 @@ import sys
 from optparse import OptionParser
 import random
 
+# to make Python2 and Python3 act the same -- how dumb
+def random_seed(seed):
+    try:
+        random.seed(seed, version=1)
+    except:
+        random.seed(seed)
+    return
+
 # finds the highest nonempty queue
 # -1 if they are all empty
 def FindQueue():
@@ -125,7 +133,7 @@ ioDone = {}
 job = {}
 
 # seed the random generator
-random.seed(options.seed)
+random_seed(options.seed)
 
 # jlist 'startTime,runTime,ioFreq:startTime,runTime,ioFreq:...'
 jobCnt = 0

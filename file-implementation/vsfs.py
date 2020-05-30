@@ -4,6 +4,14 @@ from __future__ import print_function
 import random
 from optparse import OptionParser
 
+# to make Python2 and Python3 act the same -- how dumb
+def random_seed(seed):
+    try:
+        random.seed(seed, version=1)
+    except:
+        random.seed(seed)
+    return
+
 DEBUG = False
 
 def dprint(str):
@@ -538,7 +546,7 @@ print('ARG reverse',     options.reverse)
 print('ARG printFinal',  options.printFinal)
 print('')
 
-random.seed(options.seed)
+random_seed(options.seed)
 
 if options.reverse:
     printState = False

@@ -5,6 +5,13 @@ import sys
 from optparse import OptionParser
 import random
 
+# to make Python2 and Python3 act the same -- how dumb
+def random_seed(seed):
+    try:
+        random.seed(seed, version=1)
+    except:
+        random.seed(seed)
+    return
 
 # process switch behavior
 SCHED_SWITCH_ON_IO = 'SWITCH_ON_IO'
@@ -283,7 +290,7 @@ parser.add_option('-c', help='compute answers for me', action='store_true', defa
 parser.add_option('-p', '--printstats', help='print statistics at end; only useful with -c flag (otherwise stats are not printed)', action='store_true', default=False, dest='print_stats')
 (options, args) = parser.parse_args()
 
-random.seed(options.seed)
+random_seed(options.seed)
 
 assert(options.process_switch_behavior == SCHED_SWITCH_ON_IO or \
        options.process_switch_behavior == SCHED_SWITCH_ON_END)

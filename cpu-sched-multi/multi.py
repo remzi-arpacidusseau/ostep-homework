@@ -14,6 +14,14 @@ from collections import *
 from optparse import OptionParser
 import random
 
+# to make Python2 and Python3 act the same -- how dumb
+def random_seed(seed):
+    try:
+        random.seed(seed, version=1)
+    except:
+        random.seed(seed)
+    return
+
 # helper print function for columnar output
 def print_cpu(cpu, str):
     print((' ' * cpu * 35) + str)
@@ -469,7 +477,7 @@ parser.add_option('-c', '--compute',     default=False, help='compute answers fo
 
 (options, args) = parser.parse_args()
 
-random.seed(options.seed)
+random_seed(options.seed)
 
 print('ARG seed %s' % options.seed)
 print('ARG job_num %s' % options.job_num)

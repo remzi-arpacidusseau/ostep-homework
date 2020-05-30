@@ -6,6 +6,14 @@ from optparse import OptionParser
 import random
 import math
 
+# to make Python2 and Python3 act the same -- how dumb
+def random_seed(seed):
+    try:
+        random.seed(seed, version=1)
+    except:
+        random.seed(seed)
+    return
+
 def convert(size):
     length = len(size)
     lastchar = size[length-1]
@@ -72,7 +80,7 @@ policy      = str(options.policy)
 notrace     = options.notrace
 clockbits   = int(options.clockbits)
 
-random.seed(seed)
+random_seed(seed)
 
 addrList = []
 if addressFile != '':

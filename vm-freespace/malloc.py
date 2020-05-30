@@ -4,6 +4,14 @@ from __future__ import print_function
 import random
 from optparse import OptionParser
 
+# to make Python2 and Python3 act the same -- how dumb
+def random_seed(seed):
+    try:
+        random.seed(seed, version=1)
+    except:
+        random.seed(seed)
+    return
+
 class malloc:
     def __init__(self, size, start, headerSize, policy, order, coalesce, align):
         # size of space
@@ -172,7 +180,7 @@ print('')
 
 percent = int(options.opsPAlloc) / 100.0
 
-random.seed(int(options.seed))
+random_seed(int(options.seed))
 p = {}
 L = []
 assert(percent > 0)

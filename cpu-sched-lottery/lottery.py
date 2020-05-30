@@ -5,6 +5,14 @@ import sys
 from optparse import OptionParser
 import random
 
+# to make Python2 and Python3 act the same -- how dumb
+def random_seed(seed):
+    try:
+        random.seed(seed, version=1)
+    except:
+        random.seed(seed)
+    return
+
 parser = OptionParser()
 parser.add_option('-s', '--seed', default=0, help='the random seed',              action='store', type='int', dest='seed')
 parser.add_option('-j', '--jobs', default=3, help='number of jobs in the system', action='store', type='int', dest='jobs')
@@ -16,7 +24,7 @@ parser.add_option('-c', '--compute', help='compute answers for me', action='stor
 
 (options, args) = parser.parse_args()
 
-random.seed(options.seed)
+random_seed(options.seed)
 
 print('ARG jlist', options.jlist)
 print('ARG jobs', options.jobs)
