@@ -32,7 +32,7 @@ Chapter | What To Do
 Chapter | What To Do
 --------|-----------
 [Threads Intro](http://www.cs.wisc.edu/~remzi/OSTEP/threads-intro.pdf) |	Run x86.py
-[Thread API](http://www.cs.wisc.edu/~remzi/OSTEP/threads-api.pdf)	| Run main-BLANK.c
+[Thread API](http://www.cs.wisc.edu/~remzi/OSTEP/threads-api.pdf)	| Run [some C code](threads-api)
 [Locks](http://www.cs.wisc.edu/~remzi/OSTEP/threads-locks.pdf)	| Run x86.py
 [Lock Usage](http://www.cs.wisc.edu/~remzi/OSTEP/threads-locks-usage.pdf) | Write some code
 [Condition Variables)](http://www.cs.wisc.edu/~remzi/OSTEP/threads-cv.pdf) | Run main-BLANK.c
