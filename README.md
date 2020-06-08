@@ -9,14 +9,14 @@ Thus, your task: read a chapter, look at the questions at the end of the chapter
 
 Chapter | What To Do
 --------|-----------
-[Dialogue](http://www.cs.wisc.edu/~remzi/OSTEP/dialogue-threeeasy.pdf) | No homework 
+[Dialogue](http://www.cs.wisc.edu/~remzi/OSTEP/dialogue-threeeasy.pdf) | -
 [Introduction](http://www.cs.wisc.edu/~remzi/OSTEP/intro.pdf) &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | No homework (yet)
 
 # Virtualization
 
 Chapter | What To Do
 --------|-----------
-[Dialogue](http://www.cs.wisc.edu/~remzi/OSTEP/dialogue-virtualization.pdf) | No homework
+[Dialogue](http://www.cs.wisc.edu/~remzi/OSTEP/dialogue-virtualization.pdf) | -
 [Abstraction: Processes](http://www.cs.wisc.edu/~remzi/OSTEP/cpu-intro.pdf) | Run [process-run.py](cpu-intro)
 [Process API](http://www.cs.wisc.edu/~remzi/OSTEP/cpu-api.pdf) | Write some code
 [Direct Execution](http://www.cs.wisc.edu/~remzi/OSTEP/cpu-mechanisms.pdf) | Write some code
@@ -24,8 +24,8 @@ Chapter | What To Do
 [MLFQ Scheduling](http://www.cs.wisc.edu/~remzi/OSTEP/cpu-sched-mlfq.pdf)	| Run [mlfq.py](cpu-sched-mlfq)
 [Lottery Scheduling](http://www.cs.wisc.edu/~remzi/OSTEP/cpu-sched-lottery.pdf) | Run [lottery.py](cpu-sched-lottery)
 [Multiprocessor Scheduling](http://www.cs.wisc.edu/~remzi/OSTEP/cpu-sched-multi.pdf) | Run [multi.py](cpu-sched-multi)
-[Summary](http://www.cs.wisc.edu/~remzi/OSTEP/cpu-dialogue.pdf) | No homework
-[Dialogue](http://www.cs.wisc.edu/~remzi/OSTEP/dialogue-vm.pdf) | No homework
+[Summary](http://www.cs.wisc.edu/~remzi/OSTEP/cpu-dialogue.pdf) | -
+[Dialogue](http://www.cs.wisc.edu/~remzi/OSTEP/dialogue-vm.pdf) | -
 [VM Intro]() | Write some code
 [VM API]() | Write some code
 [Relocation](http://www.cs.wisc.edu/~remzi/OSTEP/vm-mechanism.pdf) | Run [relocation.py](vm-relocation)
@@ -37,13 +37,13 @@ Chapter | What To Do
 [Paging Mechanism](http://www.cs.wisc.edu/~remzi/OSTEP/vm-beyondphys.pdf) | Run [mem.c](vm-beyondphys)
 [Paging Policy](http://www.cs.wisc.edu/~remzi/OSTEP/vm-beyondphys-policy.pdf) | Run [paging-policy.py](vm-beyondphys-policy)
 [Complete VM](http://www.cs.wisc.edu/~remzi/OSTEP/vm-complete.pdf) | No homework (yet)
-[Dialogue](http://www.cs.wisc.edu/~remzi/OSTEP/vm-dialogue.pdf) | No homework
+[Dialogue](http://www.cs.wisc.edu/~remzi/OSTEP/vm-dialogue.pdf) | -
 
 # Concurrency
 
 Chapter | What To Do
 --------|-----------
-[Dialogue](http://www.cs.wisc.edu/~remzi/OSTEP/dialogue-concurrency.pdf) | No homework
+[Dialogue](http://www.cs.wisc.edu/~remzi/OSTEP/dialogue-concurrency.pdf) | -
 [Threads Intro](http://www.cs.wisc.edu/~remzi/OSTEP/threads-intro.pdf) |	Run x86.py
 [Thread API](http://www.cs.wisc.edu/~remzi/OSTEP/threads-api.pdf)	| Run [some C code](threads-api)
 [Locks](http://www.cs.wisc.edu/~remzi/OSTEP/threads-locks.pdf)	| Run x86.py
@@ -52,13 +52,13 @@ Chapter | What To Do
 [Semaphores](http://www.cs.wisc.edu/~remzi/OSTEP/threads-sema.pdf) | Write some code
 [Concurrency Bugs](http://www.cs.wisc.edu/~remzi/OSTEP/threads-bugs.pdf) | Run [some C code](threads-bugs)
 [Event-based Concurrency](http://www.cs.wisc.edu/~remzi/OSTEP/threads-events.pdf) | Write some code
-[Summary](http://www.cs.wisc.edu/~remzi/OSTEP/threads-dialogue.pdf) | No homework
+[Summary](http://www.cs.wisc.edu/~remzi/OSTEP/threads-dialogue.pdf) | -
 
 # Persistence
 
 Chapter | What To Do
 --------|-----------
-[Dialogue](http://www.cs.wisc.edu/~remzi/OSTEP/dialogue-persistence.pdf) | No homework
+[Dialogue](http://www.cs.wisc.edu/~remzi/OSTEP/dialogue-persistence.pdf) | -
 [I/O Devices](http://www.cs.wisc.edu/~remzi/OSTEP/file-devices.pdf) | No homework (yet)
 [Hard Disk Drives](http://www.cs.wisc.edu/~remzi/OSTEP/file-disks.pdf) | Run disk.py
 [RAID](http://www.cs.wisc.edu/~remzi/OSTEP/file-raid.pdf) | Run [raid.py](file-raid)
@@ -69,9 +69,9 @@ Chapter | What To Do
 [Log-Structured File Systems](http://www.cs.wisc.edu/~remzi/OSTEP/file-lfs.pdf) | Run [lfs.py](file-lfs)
 [Solid-State Disk Drives](http://www.cs.wisc.edu/~remzi/OSTEP/file-ssd.pdf) | Run [ssd.py](file-ssd)
 [Data Integrity](http://www.cs.wisc.edu/~remzi/OSTEP/file-integrity.pdf) | Run [checksum.py](file-integrity) and Write some code
-[Summary](http://www.cs.wisc.edu/~remzi/OSTEP/file-dialogue.pdf) | No homework
-[Dialogue](http://www.cs.wisc.edu/~remzi/OSTEP/dialogue-distribution.pdf) | No homework
+[Summary](http://www.cs.wisc.edu/~remzi/OSTEP/file-dialogue.pdf) | -
+[Dialogue](http://www.cs.wisc.edu/~remzi/OSTEP/dialogue-distribution.pdf) | -
 [Distributed Intro](http://www.cs.wisc.edu/~remzi/OSTEP/dist-intro.pdf) | Write some code
 [NFS](http://www.cs.wisc.edu/~remzi/OSTEP/dist-nfs.pdf) | Write some analysis code
 [AFS](http://www.cs.wisc.edu/~remzi/OSTEP/dist-afs.pdf) | Run [afs.py](dist-afs)
-[Summary](http://www.cs.wisc.edu/~remzi/OSTEP/dist-dialogue.pdf) | No homework
+[Summary](http://www.cs.wisc.edu/~remzi/OSTEP/dist-dialogue.pdf) | -
