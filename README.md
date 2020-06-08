@@ -5,6 +5,12 @@ Each chapter has some questions at the end; we call these "homeworks", because y
 
 Thus, your task: read a chapter, look at the questions at the end of the chapter, and try to answer them by doing the homework. Some require a simulator (written in Python); those are available by clicking below. Some others require you to write some code. Still others require some other stuff (you'll figure it out).
 
+# Intro
+
+Chapter | What To Do
+--------|-----------
+[Intro](http://www.cs.wisc.edu/~remzi/OSTEP/intro.pdf) | No homework
+
 # Virtualization
 
 Chapter | What To Do
