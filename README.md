@@ -44,7 +44,7 @@ Summary | -
 Chapter | What To Do
 --------|-----------
 Dialogue | -
-[Threads Intro](http://www.cs.wisc.edu/~remzi/OSTEP/threads-intro.pdf) |	Run x86.py
+[Threads Intro](http://www.cs.wisc.edu/~remzi/OSTEP/threads-intro.pdf) | Run [x86.py](threads-intro)
 [Thread API](http://www.cs.wisc.edu/~remzi/OSTEP/threads-api.pdf)	| Run [some C code](threads-api)
 [Locks](http://www.cs.wisc.edu/~remzi/OSTEP/threads-locks.pdf)	| Run x86.py
 [Lock Usage](http://www.cs.wisc.edu/~remzi/OSTEP/threads-locks-usage.pdf) | Write some code
