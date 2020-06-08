@@ -7,16 +7,6 @@ Thus, your task: read a chapter, look at the questions at the end of the chapter
 
 # Introduction
 
-<style>
-table th:first-of-type {
-    width: 40%;
-}
-table th:nth-of-type(2) {
-    width: 40%;
-}
-</style>
-
-
 Chapter | What To Do
 --------|-----------
 [Introduction](http://www.cs.wisc.edu/~remzi/OSTEP/intro.pdf) &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | No homework
