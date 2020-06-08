@@ -9,7 +9,7 @@ Thus, your task: read a chapter, look at the questions at the end of the chapter
 
 Chapter | What To Do
 --------|-----------
-[Intro](http://www.cs.wisc.edu/~remzi/OSTEP/intro.pdf) | No homework
+[Intro](http://www.cs.wisc.edu/~remzi/OSTEP/intro.pdf) &nbsp; &nbsp; &nbsp; &nbsp; | No homework
 
 # Virtualization
 
