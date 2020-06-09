@@ -1,9 +1,21 @@
-
 # Homeworks
 
 Each chapter has some questions at the end; we call these "homeworks", because you should do the "work" at your "home". Make sense? It's one of the innovations of this book.
 
-Thus, your task: read a chapter, look at the questions at the end of the chapter, and try to answer them by doing the homework. Some require a simulator (written in Python); those are available by clicking below. Some others require you to write some code. Still others require some other stuff (you'll figure it out).
+Homeworks can be used to solidify your knowledge of the material in each of the chapters. Many homeworks are based on running a simulator, which mimic some aspect of an operating system. For example, a disk scheduling simulator could be useful in understanding how different disk scheduling algorithms work. Some other homeworks are just short programming exercises, allowing you to explore how real systems work.
+
+For the simulators, the basic idea is simple: each of the simulators below let you both generate problems and obtain solutions for an infinite number of problems. Different random seeds can usually be used to generate different problems; using the `-c` flag computes the answers for you (presumably after you have tried to compute them yourself!).
+
+Each homework included below has a README file that explains what to do. Previously, this material had been included in the chapters themselves, but that was making the book too long. Now, all that is left in the book are the questions you might want to answer with the simulator; the details on how to run code are all in the README. 
+
+Thus, your task: read a chapter, look at the questions at the end of the chapter, and try to answer them by doing the homework. Some require a simulator (written in Python); those are available by below. Some others require you to write some code. At this point, reading the relevant README is a good idea. Still others require some other stuff, like writing C code to accomplish some task.
+
+To use these, the best thing to do is to clone the homeworks. For example:
+```sh
+prompt> git clone https://github.com/remzi-arpacidusseau/ostep-homework/
+prompt> cd file-disks
+prompt> ./disk.py -h
+```
 
 # Introduction
 
