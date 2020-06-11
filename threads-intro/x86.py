@@ -14,6 +14,13 @@ def random_seed(seed):
         random.seed(seed)
     return
 
+def time_clock():
+    try:
+        rc = time_clock()
+    except:
+        rc = time.process_time()
+    return rc
+
 #
 # HELPER
 #
@@ -981,9 +988,11 @@ for t in range(numthreads):
 procs.restore()
 
 # run it
-t1 = time.clock()
+if printstats:
+    t1 = time_clock()
 ic = cpu.run(procs, intfreq, intrand)
-t2 = time.clock()
+if printstats:
+    t2 = time_clock()
 
 if printstats:
     print('')
