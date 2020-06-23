@@ -592,7 +592,7 @@ class LFS:
             
         # write new version of inode, with updated size
         new_inode = copy.deepcopy(inode)
-        new_inode['size'] = current_offset
+        new_inode['size'] = max(current_offset, inode['size'])
         for new_offset, new_addr in potential_writes:
             new_inode['pointers'][new_offset] = new_addr
         new_inode_address = self.log(new_inode)
