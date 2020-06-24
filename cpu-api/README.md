@@ -82,6 +82,80 @@ Action: a forks e
 prompt>
 ```
 
+As you can see, the expected tree that results (shown left-to-right)
+from a particular operation is shown now. After the first action, `a
+forks b`, you see a very simple tree, with `a` shown as `b`'s
+parent. After a few more forks, a call to `exit` is made by `d`, which
+reduces the tree. Finally, `e` is created, and the final tree, with
+`a` as parent of `b`, `c`, and `e` (which are considered "siblings"),
+as the final state.
+
+In a simplified mode, you can just test yourself by trying to write
+down the final process tree, using the `-F` flag:
+
+```sh
+prompt> ./fork.py -s 4 -F
+                           Process Tree:
+                               a
+
+Action: a forks b
+Action: a forks c
+Action: b forks d
+Action: d EXITS
+Action: a forks e
+
+                        Final Process Tree?
+```
+
+Once again, you can use the `-c` flag to compute the answer and see if
+you were right (in this case, you should be, because it's the same
+problem!)
+
+# Other Options
+
+A number of other options exist with the `fork` simulator.
+
+You can flip the question around with the `-t` flag, which allows you
+to view process tree states and then guess what action must have taken
+place.
+
+You can use different random seeds (`-s` flag) or just don't specify
+one to get different randomly generated sequences.
+
+You can change what percent of actions are forks (vs exits) with
+the `-f` flag.
+
+You can specify specific fork and exit sequences with the `-A`
+flag. For example, to have `a` fork `b` which then in turn forks `c`,
+just type (we show `-c` here to solve the problem, too):
+
+```sh
+prompt> ./fork.py -A a+b,b+c -c
+
+
+                           Process Tree:
+                               a
+
+Action: a forks b
+                               a
+                               └── b
+Action: b forks c
+                               a
+                               └── b
+                                   └── c
+```
+
+You can only show the final output (and see if you can guess all the
+intermediates to get there) with the `-F` flag.
+
+Finally, you can change the printing style of the tree wit the `-P`
+flag. 
+
+
+
+
+
+
 
 
 
