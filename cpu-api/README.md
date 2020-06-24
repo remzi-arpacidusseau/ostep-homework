@@ -126,12 +126,12 @@ You can change what percent of actions are forks (vs exits) with
 the `-f` flag.
 
 You can specify specific fork and exit sequences with the `-A`
-flag. For example, to have `a` fork `b` which then in turn forks `c`,
-just type (we show `-c` here to solve the problem, too):
+flag. For example, to have `a` fork `b`, `b` then fork `c`; `c`
+exit, and finally, `a` fork `d`, just type (we show `-c` here to solve
+the problem, too): 
 
 ```sh
-prompt> ./fork.py -A a+b,b+c -c
-
+prompt> ./fork.py -A a+b,b+c,c-,a+d -c
 
                            Process Tree:
                                a
@@ -143,6 +143,13 @@ Action: b forks c
                                a
                                └── b
                                    └── c
+Action: c EXITS
+                               a
+                               └── b
+Action: a forks d
+                               a
+                               ├── b
+                               └── d
 ```
 
 You can only show the final output (and see if you can guess all the
