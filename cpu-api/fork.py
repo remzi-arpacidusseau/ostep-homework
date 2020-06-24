@@ -42,12 +42,13 @@ def random_choice(L):
 # class Forker does all the work
 #
 class Forker:
-    def __init__(self, fork_percentage, actions, action_list, show_tree, just_final, print_style, solve):
+    def __init__(self, fork_percentage, actions, action_list, show_tree, just_final, leaf_only, print_style, solve):
         self.fork_percentage = fork_percentage
         self.max_actions = actions
         self.action_list = action_list
         self.show_tree = show_tree
         self.just_final = just_final
+        self.leaf_only = leaf_only
         self.print_style = print_style
         self.solve = solve
 
@@ -170,7 +171,7 @@ class Forker:
         # remove the entry for this proc from children
         self.children[p] = -1
         self.parents[p] = -1
-        return '%s EXITS' % p
+        return '%s EXIT' % p
 
     def bad_action(self, action):
         print('bad action (%s), must be X+Y or X- where X and Y are processes' % action)
@@ -204,6 +205,8 @@ class Forker:
             action_list = []
             actions = 0
             temp_process_list = [self.root_name]
+
+            # this got a little yucky, too much re-doing of the work
             while actions < self.max_actions:
                 if random.random() < self.fork_percentage:
                     # FORK:: pick random parent, add child to it
@@ -232,7 +235,10 @@ class Forker:
                 exit_choice = tmp[0]
                 if exit_choice not in self.process_list:
                     self.bad_action(a)
-                action = self.do_exit(exit_choice)
+                if self.leaf_only and len(self.children[exit_choice]) > 0:
+                    action = '%s EXIT (failed: has children)' % exit_choice
+                else:
+                    action = self.do_exit(exit_choice)
             
             # if we got here, we actually did an action...
             if self.show_tree:
@@ -288,10 +294,11 @@ parser.add_option('-s', '--seed', default=-1, help='the random seed', action='st
 parser.add_option('-f', '--forks', default=0.7, help='percent of actions that are forks (not exits)', action='store', type='float', dest='fork_percentage')
 parser.add_option('-A', '--action_list', default='', help='action list, instead of randomly generated ones (format: a+b,b+c,b- means a fork b, b fork c, b exit)', action='store', type='string', dest='action_list')
 parser.add_option('-a', '--actions', default=10, help='number of forks/exits to do', action='store', type='int', dest='actions')
-parser.add_option('-t', help='show tree (not actions)', action='store_true', default=False, dest='show_tree')
-parser.add_option('-P', help='tree print style (basic, line1, line2, fancy)', action='store', type='string', default='fancy', dest='print_style')
-parser.add_option('-F', help='just show final state', action='store_true', default=False, dest='just_final')
-parser.add_option('-c', help='compute answers for me', action='store_true', default=False, dest='solve')
+parser.add_option('-t', '--show_tree', help='show tree (not actions)', action='store_true', default=False, dest='show_tree')
+parser.add_option('-P', '--print_style', help='tree print style (basic, line1, line2, fancy)', action='store', type='string', default='fancy', dest='print_style')
+parser.add_option('-F', '--final_only', help='just show final state', action='store_true', default=False, dest='just_final')
+parser.add_option('-L', '--leaf_only', help='only leaf processes exit', action='store_true', default=False, dest='leaf_only')
+parser.add_option('-c', '--compute', help='compute answers for me', action='store_true', default=False, dest='solve')
 
 (options, args) = parser.parse_args()
 
@@ -309,11 +316,12 @@ print('ARG actions', options.actions)
 print('ARG action_list', options.action_list)
 print('ARG show_tree', options.show_tree)
 print('ARG just_final', options.just_final)
+print('ARG leaf_only', options.leaf_only)
 print('ARG print_style', options.print_style)
 print('ARG solve', options.solve)
 print('')
 
-f = Forker(options.fork_percentage, options.actions, options.action_list, options.show_tree, options.just_final, options.print_style, options.solve)
+f = Forker(options.fork_percentage, options.actions, options.action_list, options.show_tree, options.just_final, options.leaf_only, options.print_style, options.solve)
 f.run()
 
 
