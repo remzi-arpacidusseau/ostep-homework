@@ -155,7 +155,7 @@ Action: a forks d
 You can only show the final output (and see if you can guess all the
 intermediates to get there) with the `-F` flag.
 
-Finally, you can change the printing style of the tree wit the `-P`
+Finally, you can change the printing style of the tree with the `-P`
 flag. 
 
 
