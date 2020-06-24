@@ -71,9 +71,6 @@ class Forker:
         self.curr_names = self.base_names
         self.curr_index = 1
 
-        # track printing...
-        self.tracker = {}
-        
         return
 
     def grow_names(self):
@@ -109,7 +106,8 @@ class Forker:
         elif self.print_style == 'fancy':
             # these characters taken from 'treelib', a fun printing package for trees
             # https://github.com/caesar0301/treelib
-            chars = ('\u2502', '\u2500', '\u251c', '\u2514')
+            # chars = ('\u2502', '\u2500', '\u251c', '\u2514')
+            chars = (u'\u2502', u'\u2500', u'\u251c', u'\u2514')
         else:
             print('bad style %s' % self.print_style)
             exit(1)
@@ -171,7 +169,7 @@ class Forker:
         # remove the entry for this proc from children
         self.children[p] = -1
         self.parents[p] = -1
-        return '%s EXIT' % p
+        return '%s EXITS' % p
 
     def bad_action(self, action):
         print('bad action (%s), must be X+Y or X- where X and Y are processes' % action)
@@ -236,7 +234,7 @@ class Forker:
                 if exit_choice not in self.process_list:
                     self.bad_action(a)
                 if self.leaf_only and len(self.children[exit_choice]) > 0:
-                    action = '%s EXIT (failed: has children)' % exit_choice
+                    action = '%s EXITS (failed: has children)' % exit_choice
                 else:
                     action = self.do_exit(exit_choice)
             
@@ -264,9 +262,6 @@ class Forker:
             if self.show_tree:
                 if not self.solve:
                     print('\n                        Final Process Tree:')
-                    self.tracker = {}
-                    for i in range(1000):
-                        self.tracker[i] = False
                     self.print_tree()
                     print('')
                 else:
@@ -274,9 +269,6 @@ class Forker:
             else:
                 if self.solve:
                     print('\n                        Final Process Tree:')
-                    self.tracker = {}
-                    for i in range(1000):
-                        self.tracker[i] = False
                     self.print_tree()
                     print('')
                 else:
@@ -293,7 +285,7 @@ parser = OptionParser()
 parser.add_option('-s', '--seed', default=-1, help='the random seed', action='store', type='int', dest='seed')
 parser.add_option('-f', '--forks', default=0.7, help='percent of actions that are forks (not exits)', action='store', type='float', dest='fork_percentage')
 parser.add_option('-A', '--action_list', default='', help='action list, instead of randomly generated ones (format: a+b,b+c,b- means a fork b, b fork c, b exit)', action='store', type='string', dest='action_list')
-parser.add_option('-a', '--actions', default=10, help='number of forks/exits to do', action='store', type='int', dest='actions')
+parser.add_option('-a', '--actions', default=5, help='number of forks/exits to do', action='store', type='int', dest='actions')
 parser.add_option('-t', '--show_tree', help='show tree (not actions)', action='store_true', default=False, dest='show_tree')
 parser.add_option('-P', '--print_style', help='tree print style (basic, line1, line2, fancy)', action='store', type='string', default='fancy', dest='print_style')
 parser.add_option('-F', '--final_only', help='just show final state', action='store_true', default=False, dest='just_final')
