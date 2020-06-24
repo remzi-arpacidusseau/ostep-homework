@@ -39,15 +39,16 @@ def random_choice(L):
     return L[random_randint(0, len(L)-1)]
 
 #
-#
+# class Forker does all the work
 #
 class Forker:
-    def __init__(self, fork_percentage, actions, action_list, show_tree, just_final, solve):
+    def __init__(self, fork_percentage, actions, action_list, show_tree, just_final, print_style, solve):
         self.fork_percentage = fork_percentage
         self.max_actions = actions
         self.action_list = action_list
         self.show_tree = show_tree
         self.just_final = just_final
+        self.print_style = print_style
         self.solve = solve
 
         # root process is always this
@@ -68,6 +69,9 @@ class Forker:
         self.base_names = string.ascii_lowercase + string.ascii_uppercase
         self.curr_names = self.base_names
         self.curr_index = 1
+
+        # track printing...
+        self.tracker = {}
         
         return
 
@@ -88,17 +92,64 @@ class Forker:
         self.curr_index += 1
         return name
 
-    def just_name(self, name):
-        return name
+    def walk(self, p, level, pmask, is_last):
+        print('                               ', end='')
+        if self.print_style == 'basic':
+            for i in range(level):
+                print('   ', end='')
+            print('%2s' % p)
+            for child in self.children[p]:
+                self.walk(child, level + 1, {}, False)
+            return
+        elif self.print_style == 'line1':
+            chars = ('|', '-', '+', '|')
+        elif self.print_style == 'line2':
+            chars = ('|', '_', '|', '|')
+        elif self.print_style == 'fancy':
+            # these characters taken from 'treelib', a fun printing package for trees
+            # https://github.com/caesar0301/treelib
+            chars = ('\u2502', '\u2500', '\u251c', '\u2514')
+        else:
+            print('bad style %s' % self.print_style)
+            exit(1)
+            
+        # print stuff before node
+        if level > 0:
+            # main printing
+            for i in range(level-1):
+                if pmask[i]:
+                    # '|  '
+                    print('%s   ' % chars[0], end='')
+                else:
+                    print('    ', end='')
+            if pmask[level-1]:
+                # '|__'
+                if is_last:
+                    print('%s%s%s ' % (chars[3], chars[1], chars[1]), end='')
+                else:
+                    print('%s%s%s ' % (chars[2], chars[1], chars[1]), end='')
+            else:
+                # '___' 
+                print(' %s%s%s ' % (chars[1], chars[1], chars[1]), end='')
 
-    def walk(self, p, level):
-        for i in range(level):
-            print('   ', end='')
-        print('%2s' % self.just_name(p))
-        for child in self.children[p]:
-            self.walk(child, level + 1)
+        # print node
+        print('%s' % p)
+
+        # undo parent verticals
+        if is_last:
+            pmask[level-1] = False
+
+        # recurse
+        pmask[level] = True
+        for child in self.children[p][:-1]:
+            self.walk(child, level + 1, pmask, False)
+        for child in self.children[p][-1:]:
+            self.walk(child, level + 1, pmask, True)
         return
 
+    def print_tree(self):
+        return self.walk(self.root_name, 0, {}, False)
+        
     def do_fork(self, p, c):
         self.process_list.append(c)
         self.children[c] = []
@@ -142,8 +193,8 @@ class Forker:
         return 
     
     def run(self):
-        print('Initial Process Tree:')
-        self.walk(self.root_name, 0)
+        print('                           Process Tree:')
+        self.print_tree()
         print('')
 
         if self.action_list != '':
@@ -187,29 +238,43 @@ class Forker:
             if self.show_tree:
                 # SHOW TREES (guess actions)
                 if self.solve:
-                    print('Action: ', action)
+                    print('Action:', action)
                 else:
                     print('Action?')
-                print('Process Tree:')
-                self.walk(self.root_name, 0)
+                # print('Process Tree:')
+                if not self.just_final:
+                    self.print_tree()
             else:
                 # SHOW ACTIONS (guess tree)
-                print('Action: ', end='')
-                print(action)
+                print('Action:', action)
                 if not self.just_final:
                     if self.solve:
-                        print('Process Tree:')
-                        self.walk(self.root_name, 0)
+                        # print('Process Tree:')
+                        self.print_tree()
                     else:
                         print('Process Tree?')
 
         if self.just_final:
-            if self.solve:
-                print('\nFinal Process Tree:')
-                self.walk(self.root_name, 0)
-                print('')
+            if self.show_tree:
+                if not self.solve:
+                    print('\n                        Final Process Tree:')
+                    self.tracker = {}
+                    for i in range(1000):
+                        self.tracker[i] = False
+                    self.print_tree()
+                    print('')
+                else:
+                    print('\n                        Final Process Tree?\n')
             else:
-                print('\nFinal Process Tree?\n')
+                if self.solve:
+                    print('\n                        Final Process Tree:')
+                    self.tracker = {}
+                    for i in range(1000):
+                        self.tracker[i] = False
+                    self.print_tree()
+                    print('')
+                else:
+                    print('\n                        Final Process Tree?\n')
             
         return
 
@@ -224,6 +289,7 @@ parser.add_option('-f', '--forks', default=0.7, help='percent of actions that ar
 parser.add_option('-A', '--action_list', default='', help='action list, instead of randomly generated ones (format: a+b,b+c,b- means a fork b, b fork c, b exit)', action='store', type='string', dest='action_list')
 parser.add_option('-a', '--actions', default=10, help='number of forks/exits to do', action='store', type='int', dest='actions')
 parser.add_option('-t', help='show tree (not actions)', action='store_true', default=False, dest='show_tree')
+parser.add_option('-P', help='tree print style (basic, line1, line2, fancy)', action='store', type='string', default='fancy', dest='print_style')
 parser.add_option('-F', help='just show final state', action='store_true', default=False, dest='just_final')
 parser.add_option('-c', help='compute answers for me', action='store_true', default=False, dest='solve')
 
@@ -243,10 +309,11 @@ print('ARG actions', options.actions)
 print('ARG action_list', options.action_list)
 print('ARG show_tree', options.show_tree)
 print('ARG just_final', options.just_final)
+print('ARG print_style', options.print_style)
 print('ARG solve', options.solve)
 print('')
 
-f = Forker(options.fork_percentage, options.actions, options.action_list, options.show_tree, options.just_final, options.solve)
+f = Forker(options.fork_percentage, options.actions, options.action_list, options.show_tree, options.just_final, options.print_style, options.solve)
 f.run()
 
 
