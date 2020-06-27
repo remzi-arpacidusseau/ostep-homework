@@ -64,6 +64,13 @@ class Boiler:
         self.fd.write('    printf(\"%3d %s\\n\", (int)t, m);\n')
         self.fd.write('}\n')
         self.fd.write('\n')
+        self.fd.write('void Fork(char *p, char *c) {\n')
+        self.fd.write('    double t = Time_GetSeconds() - t_start;\n')
+        self.fd.write('    printf(\"%3d \", (int)t);\n')
+        self.fd.write('    Space(p[0]);\n')
+        self.fd.write('    printf(\"%s->%s\\n\", p, c);\n')
+        self.fd.write('}\n')
+        self.fd.write('\n')
         self.fd.write('void __Begin(char *m) {\n')
         self.fd.write('    double t = Time_GetSeconds() - t_start;\n')
         self.fd.write('    printf(\"%3d \", (int)t);\n')
@@ -84,12 +91,12 @@ class Boiler:
         return
 
     def fini(self):
-        self.fd.write('    return 0;\n\n')
+        self.fd.write('    return 0;\n')
         self.fd.write('}\n\n')
         return
 
     def main(self):
-        self.fd.write('int main(int argc, char *argv[]) {\n\n')
+        self.fd.write('int main(int argc, char *argv[]) {\n')
         return
 
     def main_runnable(self):
@@ -200,7 +207,9 @@ class Generator_Runnable:
         self.parent_list.append(self.curr_thread)
         self.waiting_for[self.curr_thread].append((int(sleep_time), child_thread))
         self.waiting_for[self.curr_thread] = sorted(self.waiting_for[self.curr_thread], key = lambda x: (x[0]))
-        print('add fork for %s' % self.curr_thread, self.waiting_for[self.curr_thread])
+        # print('add fork for %s' % self.curr_thread, self.waiting_for[self.curr_thread])
+        self.tab()
+        self.fd.write('Fork(\"%s\", \"%s\");\n' % (self.curr_thread, child_thread))
         self.tab()
         self.fd.write('if (fork_or_die() == 0) {\n')
         self.tab_level += 1
@@ -229,7 +238,7 @@ class Generator_Runnable:
         self.tab()
         # how to know who to wait for?
         waiting_for = self.waiting_for[self.curr_thread].pop(0)
-        print('%s waited for %s' % (self.curr_thread, waiting_for[1]))
+        # print('%s waited for %s' % (self.curr_thread, waiting_for[1]))
         self.fd.write('Wait(\"%s<-%s\");\n' % (self.curr_thread, waiting_for[1]))
         return
         
@@ -262,6 +271,7 @@ class Generator_Runnable:
 # MAIN PROGRAM
 #
 
+# begin a
 # fork b 10 
 #   fork c 5
 #     exit 
@@ -273,6 +283,7 @@ class Generator_Runnable:
 # wait
 
 actions = ['fork b 10', 'fork c 5', 'exit', 'wait', 'exit', 'fork d 2', 'exit', 'wait', 'wait']
+actions = ['fork b 3', 'exit', 'fork c 2', 'exit', 'fork d 1', 'exit', 'wait', 'wait', 'wait']
 
 G = Generator_Readable('m_read.c', actions)
 G.generate()
