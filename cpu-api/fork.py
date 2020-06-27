@@ -203,6 +203,8 @@ class Forker:
             action_list = []
             actions = 0
             temp_process_list = [self.root_name]
+            level_list = {}
+            level_list[self.root_name] = 1
 
             # this got a little yucky, too much re-doing of the work
             while actions < self.max_actions:
@@ -260,12 +262,9 @@ class Forker:
 
         if self.just_final:
             if self.show_tree:
-                if not self.solve:
-                    print('\n                        Final Process Tree:')
-                    self.print_tree()
-                    print('')
-                else:
-                    print('\n                        Final Process Tree?\n')
+                print('\n                        Final Process Tree:')
+                self.print_tree()
+                print('')
             else:
                 if self.solve:
                     print('\n                        Final Process Tree:')
