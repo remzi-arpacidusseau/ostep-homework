@@ -42,13 +42,15 @@ def random_choice(L):
 # class Forker does all the work
 #
 class Forker:
-    def __init__(self, fork_percentage, actions, action_list, show_tree, just_final, leaf_only, print_style, solve):
+    def __init__(self, fork_percentage, actions, action_list, show_tree, just_final,
+                 leaf_only, local_reparent, print_style, solve):
         self.fork_percentage = fork_percentage
         self.max_actions = actions
         self.action_list = action_list
         self.show_tree = show_tree
         self.just_final = just_final
         self.leaf_only = leaf_only
+        self.local_reparent = local_reparent
         self.print_style = print_style
         self.solve = solve
 
@@ -156,19 +158,57 @@ class Forker:
         self.parents[c] = p
         return '%s forks %s' % (p, c)
 
+    def reparent_to_root(self, orphan):
+        print('reparent (%s)' % orphan)
+        o_parent = self.parents[orphan]
+        print('  parent -> (%s)' % o_parent)
+        # self.children[o_parent].remove(orphan)
+        print('  parents children -> (%s)' % o_parent, self.children[o_parent])
+        self.parents[orphan] = self.root_name
+        self.children[self.root_name].append(orphan)
+        print('  root children', self.children[self.root_name])
+        # do for all of its children too
+        print('  orphan %s children' % orphan, self.children[orphan])
+        for o in self.children[orphan]:
+            print('reparent child [%s] -> %s' % (orphan, o))
+            self.reparent_to_root(o)
+            print('return!')
+        return
+
+    def collect_children(self, p):
+        if self.children[p] == []:
+            return [p]
+        else:
+            L = [p]
+            for c in self.children[p]:
+                L += self.collect_children(c)
+            return L
+
     def do_exit(self, p):
         # remove the process from the process list
         exit_parent = self.parents[p]
         self.process_list.remove(p)
-        # for each orphan, set its parent to exiting proc's parent
-        for orphan in self.children[p]:
-            self.parents[orphan] = exit_parent
-            self.children[exit_parent].append(orphan)
+
+        # for each orphan, set its parent to exiting proc's parent or root
+        if self.local_reparent:
+            for orphan in self.children[p]:
+                self.parents[orphan] = exit_parent
+                self.children[exit_parent].append(orphan)
+        else:
+            # should set ALL descendants to be child of ROOT 
+            descendents = self.collect_children(p)
+            descendents.remove(p)
+            for d in descendents:
+                self.children[d] = []
+                self.parents[d] = self.root_name
+                self.children[self.root_name].append(d)
+
         # remove the entry from its parent child list
         self.children[exit_parent].remove(p)
+        self.children[p] = -1 # should never be used again
+        self.parents[p] = -1  # should never be used again
+            
         # remove the entry for this proc from children
-        self.children[p] = -1
-        self.parents[p] = -1
         return '%s EXITS' % p
 
     def bad_action(self, action):
@@ -289,6 +329,7 @@ parser.add_option('-t', '--show_tree', help='show tree (not actions)', action='s
 parser.add_option('-P', '--print_style', help='tree print style (basic, line1, line2, fancy)', action='store', type='string', default='fancy', dest='print_style')
 parser.add_option('-F', '--final_only', help='just show final state', action='store_true', default=False, dest='just_final')
 parser.add_option('-L', '--leaf_only', help='only leaf processes exit', action='store_true', default=False, dest='leaf_only')
+parser.add_option('-R', '--local_reparent', help='reparent to local parent', action='store_true', default=False, dest='local_reparent')
 parser.add_option('-c', '--compute', help='compute answers for me', action='store_true', default=False, dest='solve')
 
 (options, args) = parser.parse_args()
@@ -308,11 +349,12 @@ print('ARG action_list', options.action_list)
 print('ARG show_tree', options.show_tree)
 print('ARG just_final', options.just_final)
 print('ARG leaf_only', options.leaf_only)
+print('ARG local_reparent', options.local_reparent)
 print('ARG print_style', options.print_style)
 print('ARG solve', options.solve)
 print('')
 
-f = Forker(options.fork_percentage, options.actions, options.action_list, options.show_tree, options.just_final, options.leaf_only, options.print_style, options.solve)
+f = Forker(options.fork_percentage, options.actions, options.action_list, options.show_tree, options.just_final, options.leaf_only, options.local_reparent, options.print_style, options.solve)
 f.run()
 
 
