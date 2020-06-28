@@ -4,12 +4,6 @@ from __future__ import print_function
 import random
 import string
 
-names = string.ascii_lowercase + string.ascii_uppercase
-name_index = 1
-
-used_times = {}
-used_times[0] = True
-
 class Boiler:
     def __init__(self, fd):
         self.fd = fd
@@ -19,10 +13,10 @@ class Boiler:
         self.fd.write('#include <assert.h>\n')
         self.fd.write('#include <stdio.h>\n')
         self.fd.write('#include <stdlib.h>\n')
+        self.fd.write('#include <string.h>\n')
         self.fd.write('#include <sys/time.h>\n')
         self.fd.write('#include <sys/wait.h>\n')
         self.fd.write('#include <unistd.h>\n')
-        self.fd.write('\n')
         self.fd.write('\n')
         self.fd.write('void wait_or_die() {\n')
         self.fd.write('    int rc = wait(NULL);\n')
@@ -43,6 +37,14 @@ class Boiler:
         self.fd.write('\n')
         self.fd.write('double t_start;\n')
         self.fd.write('\n')
+        self.fd.write('struct pid_map {\n')
+        self.fd.write('    int pid;\n')
+        self.fd.write('    char name[10];\n')
+        self.fd.write('    struct pid_map *next;\n')
+        self.fd.write('};\n')
+        self.fd.write('\n')
+        self.fd.write('struct pid_map *head = NULL;\n')
+        self.fd.write('\n')
         self.fd.write('void Space(char c) {\n')
         self.fd.write('    int i;\n')
         self.fd.write('    for (i = 0; i < 5 * (c - \'a\'); i++) {\n')
@@ -50,12 +52,34 @@ class Boiler:
         self.fd.write('    }\n')
         self.fd.write('}\n')
         self.fd.write('\n')
+        self.fd.write('char *Lookup(int pid) {\n')
+        self.fd.write('    struct pid_map *curr = head;\n')
+        self.fd.write('    while (curr) {\n')
+        self.fd.write('        if (curr->pid == pid) \n')
+        self.fd.write('	           return(curr->name);\n')
+        self.fd.write('	       curr = curr->next;\n')
+        self.fd.write('    }\n')
+        self.fd.write('    return NULL;\n')
+        self.fd.write('}\n')
+        self.fd.write('\n')
+        self.fd.write('void Record(int pid, char *m) {\n')
+        self.fd.write('    struct pid_map *n = malloc(sizeof(struct pid_map));\n')
+        self.fd.write('    assert(n);\n')
+        self.fd.write('    n->pid = pid;\n')
+        self.fd.write('    strcpy(n->name, m);\n')
+        self.fd.write('    n->next = head;\n')
+        self.fd.write('    head = n;\n')
+        self.fd.write('}\n')
+        self.fd.write('\n')
         self.fd.write('void Wait(char *m) {\n')
-        self.fd.write('    wait_or_die();\n')
+        self.fd.write('    int rc = wait(NULL);\n')
+        self.fd.write('    assert(rc > 0);\n')
         self.fd.write('    double t = Time_GetSeconds() - t_start;\n')
         self.fd.write('    printf(\"%3d \", (int)t);\n')
         self.fd.write('    Space(m[0]);\n')
-        self.fd.write('    printf(\"%s\\n\", m);\n')
+        self.fd.write('    char *n = Lookup(rc);\n')
+        self.fd.write('    assert(n != NULL);\n')
+        self.fd.write('    printf(\"%s<-%s\\n\", m, n);\n')
         self.fd.write('}\n')
         self.fd.write('\n')
         self.fd.write('void Sleep(int s, char *m) {\n')
@@ -101,6 +125,7 @@ class Boiler:
 
     def main_runnable(self):
         self.main()
+        self.fd.write('    int rc;\n')
         self.fd.write('    t_start = Time_GetSeconds();\n')
         return
 
@@ -189,6 +214,8 @@ class Generator_Runnable:
 
         self.parent_list = []
         self.waiting_for = {}
+
+        self.used_times = {}
         return
 
     def tab(self):
@@ -205,13 +232,12 @@ class Generator_Runnable:
 
     def add_fork(self, child_thread, sleep_time):
         self.parent_list.append(self.curr_thread)
-        self.waiting_for[self.curr_thread].append((int(sleep_time), child_thread))
-        self.waiting_for[self.curr_thread] = sorted(self.waiting_for[self.curr_thread], key = lambda x: (x[0]))
+        self.waiting_for[self.curr_thread].append(child_thread)
         # print('add fork for %s' % self.curr_thread, self.waiting_for[self.curr_thread])
         self.tab()
         self.fd.write('Fork(\"%s\", \"%s\");\n' % (self.curr_thread, child_thread))
         self.tab()
-        self.fd.write('if (fork_or_die() == 0) {\n')
+        self.fd.write('if ((rc = fork_or_die()) == 0) {\n')
         self.tab_level += 1
         return
 
@@ -231,6 +257,8 @@ class Generator_Runnable:
         self.tab_level -= 1
         self.tab()
         self.fd.write('}\n')
+        self.tab()
+        self.fd.write('Record(rc, \"%s\");\n' % self.curr_thread)
         self.curr_thread = self.parent_list.pop()
         return
 
@@ -239,7 +267,7 @@ class Generator_Runnable:
         # how to know who to wait for?
         waiting_for = self.waiting_for[self.curr_thread].pop(0)
         # print('%s waited for %s' % (self.curr_thread, waiting_for[1]))
-        self.fd.write('Wait(\"%s<-%s\");\n' % (self.curr_thread, waiting_for[1]))
+        self.fd.write('Wait(\"%s\");\n' % self.curr_thread);
         return
         
     def generate(self):
@@ -282,8 +310,15 @@ class Generator_Runnable:
 # wait
 # wait
 
-actions = ['fork b 10', 'fork c 5', 'exit', 'wait', 'exit', 'fork d 2', 'exit', 'wait', 'wait']
-actions = ['fork b 3', 'exit', 'fork c 2', 'exit', 'fork d 1', 'exit', 'wait', 'wait', 'wait']
+names = string.ascii_lowercase + string.ascii_uppercase
+name_index = 1
+
+used_times = {}
+used_times[0] = True
+
+actions = ['fork b 2', 'exit', 'fork c 2', 'exit', 'fork d 1', 'exit', 'wait', 'wait', 'wait']
+actions = ['fork b 10', 'fork c 5', 'exit', 'wait', 'exit', 'fork d 17', 'exit', 'wait', 'wait']
+# actions = { fork b,10 {fork c,5} w }, { fork d,12 {} }, w, w
 
 G = Generator_Readable('m_read.c', actions)
 G.generate()
