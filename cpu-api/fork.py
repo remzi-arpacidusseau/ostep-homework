@@ -158,23 +158,6 @@ class Forker:
         self.parents[c] = p
         return '%s forks %s' % (p, c)
 
-    def reparent_to_root(self, orphan):
-        print('reparent (%s)' % orphan)
-        o_parent = self.parents[orphan]
-        print('  parent -> (%s)' % o_parent)
-        # self.children[o_parent].remove(orphan)
-        print('  parents children -> (%s)' % o_parent, self.children[o_parent])
-        self.parents[orphan] = self.root_name
-        self.children[self.root_name].append(orphan)
-        print('  root children', self.children[self.root_name])
-        # do for all of its children too
-        print('  orphan %s children' % orphan, self.children[orphan])
-        for o in self.children[orphan]:
-            print('reparent child [%s] -> %s' % (orphan, o))
-            self.reparent_to_root(o)
-            print('return!')
-        return
-
     def collect_children(self, p):
         if self.children[p] == []:
             return [p]
