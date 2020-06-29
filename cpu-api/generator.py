@@ -325,45 +325,44 @@ class Parser:
         # now go through and find the commands
         # easy to parse by just splitting on spaces
         tokens = program.split()
-        action_list = []
-        i = 0
-        done = False
-        in_fork = 0       # tracks 
-        brace_count = 0
-        wait_count = {}
-        fork_level = 0
+        action_list = []  # add actions understood by generators here
+        curr = 0          # where we are in list of tokens
+        done = False      # 
+        brace_count = 0   # ensures matching number of braces
+        wait_count = {}   # tracks, per fork-nesting level, that enough waits are added
+        fork_level = 0    # tracks level of forks
         wait_count[fork_level] = 0
-        while not done:
-            if tokens[i] == '':
+        while curr < len(tokens):
+            if tokens[curr] == '':
+                curr += 1
                 continue
-            elif tokens[i] == 'fork':
+            elif tokens[curr] == 'fork':
                 wait_count[fork_level] += 1
                 fork_level += 1
                 wait_count[fork_level] = 0
-                assert(len(tokens) >= i+2)
-                args = tokens[i+1]
+                assert(len(tokens) >= curr + 2)
+                args = tokens[curr + 1]
                 args_split = args.split(',')
                 assert(len(args_split) == 2)
-                lbrace = tokens[i+2]
+                lbrace = tokens[curr + 2]
                 self.abort_if(lbrace != '{', 'must have {} following fork')
                 action_list.append('fork %s %s' % (args_split[0], args_split[1]))
-                in_fork += 1
+                # skip over the argument and the left brace
+                curr += 2
                 brace_count += 1
-            elif tokens[i] == '}':
-                self.abort_if(in_fork == 0, 'extra close brace')
+            elif tokens[curr] == '}':
+                self.abort_if(fork_level == 0, 'extra close brace')
                 action_list.append("exit")
-                in_fork -= 1
-                brace_count -= 1
                 self.abort_if(wait_count[fork_level] != 0, '#waits does not match #forks')
+                brace_count -= 1
                 fork_level -= 1
-            elif tokens[i] == 'wait':
+            elif tokens[curr] == 'wait':
                 wait_count[fork_level] -= 1
                 action_list.append("wait")
-
+            else:
+                self.abort_if(True, 'unrecognized token %s' % tokens[curr])
             # loop until all done with tokens
-            i += 1
-            if i >= len(tokens):
-                done = True
+            curr += 1
 
         # some final checks
         self.abort_if(wait_count[0] != 0, '#waits does not match #forks')
