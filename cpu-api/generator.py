@@ -327,7 +327,6 @@ class Parser:
         tokens = program.split()
         action_list = []  # add actions understood by generators here
         curr = 0          # where we are in list of tokens
-        done = False      # 
         brace_count = 0   # ensures matching number of braces
         wait_count = {}   # tracks, per fork-nesting level, that enough waits are added
         fork_level = 0    # tracks level of forks
@@ -340,10 +339,10 @@ class Parser:
                 wait_count[fork_level] += 1
                 fork_level += 1
                 wait_count[fork_level] = 0
-                assert(len(tokens) >= curr + 2)
+                self.abort_if(len(tokens) < curr + 2, 'malformed program: fork needs process name,sleep length plus {description} of what the forked process should do')
                 args = tokens[curr + 1]
                 args_split = args.split(',')
-                assert(len(args_split) == 2)
+                self.abort_if(len(args_split) != 2, 'not enough args to fork (process name, sleep time)')
                 lbrace = tokens[curr + 2]
                 self.abort_if(lbrace != '{', 'must have {} following fork')
                 action_list.append('fork %s %s' % (args_split[0], args_split[1]))
