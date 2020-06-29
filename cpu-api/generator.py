@@ -319,56 +319,44 @@ name_index = 1
 used_times = {}
 used_times[0] = True
 
-actions = ['fork b 2', 'exit', 'fork c 2', 'exit', 'fork d 1', 'exit', 'wait', 'wait', 'wait']
-actions = ['fork b 10', 'fork c 5', 'exit', 'wait', 'exit', 'fork d 17', 'exit', 'wait', 'wait']
-# actions = fork b,1 { fork c,5 wait } fork d,12 {} wait wait
-action_list = "fork  b   ,  10{fork c,5 {} wait} fork d,17 {} wait wait"
+action_list = "fork b,10 {fork c,5 {} wait} fork d,17 {} wait wait"
+action_list = "fork b,10{} fork c,5{} fork d,8{} wait wait wait"
 
 import re
 
 def parse(program):
+    orig_program = program
     # remove spaces around commas
-    print('program', program)
     p = re.compile('\s*,\s*')
-    for t in p.findall(program):
-        print(t)
-    exit(0)
+    m = p.search(program)
+    while m:
+        program = program.replace(m.group(), ',', 1)
+        m = p.search(program, m.end())
         
-    
-    new_program = ''
-    removing = False
-    after_comma = False
-    for i in range(len(program)):
-        if removing and program[i] != ' ':
-            removing = False
-        if after_comma:
-            if program[i] == ' ':
-                after_comma = False
-                removing = True
-        if program[i] == ',':
-            after_comma = True
-        if not removing:
-            new_program += program[i]
-    print('new', new_program)
-    
     # add spaces around braces
-    new_program = new_program.replace('{', ' { ')
-    new_program = new_program.replace('}', ' } ')
+    program = program.replace('{', ' { ')
+    program = program.replace('}', ' } ')
     
-    print(new_program)
-    
-    tokens = new_program.split()
-    print(tokens)
+    # now go through and find the commands
+    # easy to parse by just splitting on spaces
+    tokens = program.split()
     action_list = []
     i = 0
     done = False
     in_fork = 0
+    brace_count = 0
+    wait_count = {}
+    fork_level = 0
+    wait_count[fork_level] = 0
     while not done:
+        # print('tokens[i]', tokens[i])
         if tokens[i] == '':
             continue
-        
-        if tokens[i] == 'fork':
-            assert(len(tokens) >= i+1)
+        elif tokens[i] == 'fork':
+            wait_count[fork_level] += 1
+            fork_level += 1
+            wait_count[fork_level] = 0
+            assert(len(tokens) >= i+2)
             args = tokens[i+1]
             args_split = args.split(',')
             assert(len(args_split) == 2)
@@ -376,27 +364,41 @@ def parse(program):
             assert(lbrace == '{')
             action_list.append('fork %s %s' % (args_split[0], args_split[1]))
             in_fork += 1
+            brace_count += 1
         elif tokens[i] == '}':
             assert(in_fork > 0)
             action_list.append("exit")
             in_fork -= 1
+            brace_count -= 1
+            # print('              wait count[%d]' % fork_level, wait_count[fork_level])
+            if wait_count[fork_level] != 0:
+                print('bad program: #waits does not match #forks [%s]' % orig_program)
+                exit(1)
+            fork_level -= 1
         elif tokens[i] == 'wait':
+            wait_count[fork_level] -= 1
             action_list.append("wait")
 
         i += 1
         if i >= len(tokens):
             done = True
+
+    # some final checks
+    if wait_count[0] != 0:
+        print('bad program: #waits does not match #forks [%s]' % orig_program)
+        exit(1)
+    if brace_count != 0:
+        print('bad input, unbalanced braces [%s]' % orig_program)
+        exit(1)
+
     return action_list
 
-print(actions)
-print(parse(action_list))
+
+actions = parse(action_list)
 
 G = Generator_Readable('m_read.c', actions)
 G.generate()
 
 G = Generator_Runnable('m_run.c', actions)
 G.generate()
-
-
-
 
