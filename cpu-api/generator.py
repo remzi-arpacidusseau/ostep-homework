@@ -2,7 +2,9 @@
 
 from __future__ import print_function
 import random
+import re
 import string
+from optparse import OptionParser
 
 class Boiler:
     def __init__(self, fd):
@@ -295,22 +297,93 @@ class Generator_Runnable:
         self.boiler.fini()
         return
 
+class Parser:
+    def __init__(self, program):
+        self.program = program
+        self.orig_program = program
+
+    def abort_if(self, condition, message):
+        if condition:
+            print('bad program: [%s]' % self.orig_program)
+            print(message)
+            exit(1)
+        return
+
+    def parse(self):
+        # remove spaces around commas
+        program = self.program
+        p = re.compile('\s*,\s*')
+        m = p.search(program)
+        while m:
+            program = program.replace(m.group(), ',', 1)
+            m = p.search(program, m.end())
+        
+        # add spaces around braces
+        program = program.replace('{', ' { ')
+        program = program.replace('}', ' } ')
+    
+        # now go through and find the commands
+        # easy to parse by just splitting on spaces
+        tokens = program.split()
+        action_list = []
+        i = 0
+        done = False
+        in_fork = 0       # tracks 
+        brace_count = 0
+        wait_count = {}
+        fork_level = 0
+        wait_count[fork_level] = 0
+        while not done:
+            if tokens[i] == '':
+                continue
+            elif tokens[i] == 'fork':
+                wait_count[fork_level] += 1
+                fork_level += 1
+                wait_count[fork_level] = 0
+                assert(len(tokens) >= i+2)
+                args = tokens[i+1]
+                args_split = args.split(',')
+                assert(len(args_split) == 2)
+                lbrace = tokens[i+2]
+                self.abort_if(lbrace != '{', 'must have {} following fork')
+                action_list.append('fork %s %s' % (args_split[0], args_split[1]))
+                in_fork += 1
+                brace_count += 1
+            elif tokens[i] == '}':
+                self.abort_if(in_fork == 0, 'extra close brace')
+                action_list.append("exit")
+                in_fork -= 1
+                brace_count -= 1
+                self.abort_if(wait_count[fork_level] != 0, '#waits does not match #forks')
+                fork_level -= 1
+            elif tokens[i] == 'wait':
+                wait_count[fork_level] -= 1
+                action_list.append("wait")
+
+            # loop until all done with tokens
+            i += 1
+            if i >= len(tokens):
+                done = True
+
+        # some final checks
+        self.abort_if(wait_count[0] != 0, '#waits does not match #forks')
+        self.abort_if(brace_count != 0, 'unbalanced braces')
+
+        return action_list
+
 #
 # MAIN PROGRAM
 #
 
-# begin a
-# fork b 10 
-#   fork c 5
-#     exit 
-#   wait
-# exit
-# fork d 2
-#   exit
-# wait
-# wait
+parser = OptionParser()
+parser.add_option('-s', '--seed', default=-1, help='random seed', action='store', type='int', dest='seed')
+parser.add_option('-A', '--action_list', default='', help='action list, instead of randomly generated ones (simple example: "fork b,10 {} wait" is a program that runs a process (called a) which then forks process b which runs for 10 seconds, and then a waits for b to complete; see README for details', action='store', type='string', dest='action_list')
+parser.add_option('-c', '--compute', help='compute answers for me', action='store_true', default=False, dest='solve')
 
+(options, args) = parser.parse_args()
 
+if options.seed != -1:
+    random_seed(options.seed)
 
 
 names = string.ascii_lowercase + string.ascii_uppercase
@@ -319,82 +392,11 @@ name_index = 1
 used_times = {}
 used_times[0] = True
 
-action_list = "fork b,10 {fork c,5 {} wait} fork d,17 {} wait wait"
-action_list = "fork b,10{} fork c,5{} fork d,8{} wait wait wait"
+# action_list = "fork b,10 {fork c,5 {} wait} fork d,17 {} wait wait"
+# action_list = "fork b,10{} fork c,5{} fork d,8{} wait wait wait"
 
-import re
-
-def parse(program):
-    orig_program = program
-    # remove spaces around commas
-    p = re.compile('\s*,\s*')
-    m = p.search(program)
-    while m:
-        program = program.replace(m.group(), ',', 1)
-        m = p.search(program, m.end())
-        
-    # add spaces around braces
-    program = program.replace('{', ' { ')
-    program = program.replace('}', ' } ')
-    
-    # now go through and find the commands
-    # easy to parse by just splitting on spaces
-    tokens = program.split()
-    action_list = []
-    i = 0
-    done = False
-    in_fork = 0
-    brace_count = 0
-    wait_count = {}
-    fork_level = 0
-    wait_count[fork_level] = 0
-    while not done:
-        # print('tokens[i]', tokens[i])
-        if tokens[i] == '':
-            continue
-        elif tokens[i] == 'fork':
-            wait_count[fork_level] += 1
-            fork_level += 1
-            wait_count[fork_level] = 0
-            assert(len(tokens) >= i+2)
-            args = tokens[i+1]
-            args_split = args.split(',')
-            assert(len(args_split) == 2)
-            lbrace = tokens[i+2]
-            assert(lbrace == '{')
-            action_list.append('fork %s %s' % (args_split[0], args_split[1]))
-            in_fork += 1
-            brace_count += 1
-        elif tokens[i] == '}':
-            assert(in_fork > 0)
-            action_list.append("exit")
-            in_fork -= 1
-            brace_count -= 1
-            # print('              wait count[%d]' % fork_level, wait_count[fork_level])
-            if wait_count[fork_level] != 0:
-                print('bad program: #waits does not match #forks [%s]' % orig_program)
-                exit(1)
-            fork_level -= 1
-        elif tokens[i] == 'wait':
-            wait_count[fork_level] -= 1
-            action_list.append("wait")
-
-        i += 1
-        if i >= len(tokens):
-            done = True
-
-    # some final checks
-    if wait_count[0] != 0:
-        print('bad program: #waits does not match #forks [%s]' % orig_program)
-        exit(1)
-    if brace_count != 0:
-        print('bad input, unbalanced braces [%s]' % orig_program)
-        exit(1)
-
-    return action_list
-
-
-actions = parse(action_list)
+P = Parser(options.action_list)
+actions = P.parse()
 
 G = Generator_Readable('m_read.c', actions)
 G.generate()
