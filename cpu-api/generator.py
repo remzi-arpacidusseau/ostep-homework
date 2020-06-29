@@ -188,8 +188,8 @@ class Generator_Readable:
                 # fork thread_id sleep_time
                 assert(len(tmp) == 3)
                 self.add_fork()
-                self.add_thread(tmp[1])
                 self.add_sleep(tmp[2])
+                self.add_thread(tmp[1])
             elif tmp[0] == 'exit':
                 assert(len(tmp) == 1)
                 self.add_exit()
@@ -310,6 +310,9 @@ class Generator_Runnable:
 # wait
 # wait
 
+
+
+
 names = string.ascii_lowercase + string.ascii_uppercase
 name_index = 1
 
@@ -318,7 +321,75 @@ used_times[0] = True
 
 actions = ['fork b 2', 'exit', 'fork c 2', 'exit', 'fork d 1', 'exit', 'wait', 'wait', 'wait']
 actions = ['fork b 10', 'fork c 5', 'exit', 'wait', 'exit', 'fork d 17', 'exit', 'wait', 'wait']
-# actions = { fork b,10 {fork c,5} w }, { fork d,12 {} }, w, w
+# actions = fork b,1 { fork c,5 wait } fork d,12 {} wait wait
+action_list = "fork  b   ,  10{fork c,5 {} wait} fork d,17 {} wait wait"
+
+import re
+
+def parse(program):
+    # remove spaces around commas
+    print('program', program)
+    p = re.compile('\s*,\s*')
+    for t in p.findall(program):
+        print(t)
+    exit(0)
+        
+    
+    new_program = ''
+    removing = False
+    after_comma = False
+    for i in range(len(program)):
+        if removing and program[i] != ' ':
+            removing = False
+        if after_comma:
+            if program[i] == ' ':
+                after_comma = False
+                removing = True
+        if program[i] == ',':
+            after_comma = True
+        if not removing:
+            new_program += program[i]
+    print('new', new_program)
+    
+    # add spaces around braces
+    new_program = new_program.replace('{', ' { ')
+    new_program = new_program.replace('}', ' } ')
+    
+    print(new_program)
+    
+    tokens = new_program.split()
+    print(tokens)
+    action_list = []
+    i = 0
+    done = False
+    in_fork = 0
+    while not done:
+        if tokens[i] == '':
+            continue
+        
+        if tokens[i] == 'fork':
+            assert(len(tokens) >= i+1)
+            args = tokens[i+1]
+            args_split = args.split(',')
+            assert(len(args_split) == 2)
+            lbrace = tokens[i+2]
+            assert(lbrace == '{')
+            action_list.append('fork %s %s' % (args_split[0], args_split[1]))
+            in_fork += 1
+        elif tokens[i] == '}':
+            assert(in_fork > 0)
+            action_list.append("exit")
+            in_fork -= 1
+        elif tokens[i] == 'wait':
+            action_list.append("wait")
+
+        i += 1
+        if i >= len(tokens):
+            done = True
+    return action_list
+
+print(actions)
+print(parse(action_list))
 
 G = Generator_Readable('m_read.c', actions)
 G.generate()
