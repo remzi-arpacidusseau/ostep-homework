@@ -6,7 +6,26 @@ import re
 import string
 from optparse import OptionParser
 
-class Boiler:
+#
+# to make Python2 and Python3 act the same -- how dumb
+# 
+def random_seed(seed):
+    try:
+        random.seed(seed, version=1)
+    except:
+        random.seed(seed)
+    return
+
+def random_randint(low, hi):
+    return int(low + random.random() * (hi - low + 1))
+
+def random_choice(L):
+    return L[random_randint(0, len(L)-1)]
+
+#
+# boilerplate code for .c files used by both readable/runnable code versions
+#
+class Boilerplate:
     def __init__(self, fd):
         self.fd = fd
         return
@@ -136,14 +155,14 @@ class Boiler:
         return
     
 
-class Generator_Readable:
+class CodeGeneratorReadable:
     def __init__(self, out_file, actions):
         self.out_file = out_file
         self.actions = actions
 
         self.tab_level = 1
         self.fd = open(out_file, 'w')
-        self.boiler = Boiler(self.fd)
+        self.boiler = Boilerplate(self.fd)
         return
 
     def tab(self):
@@ -205,14 +224,14 @@ class Generator_Readable:
         self.boiler.fini()
         return
 
-class Generator_Runnable:
+class CodeGeneratorRunnable:
     def __init__(self, out_file, actions):
         self.out_file = out_file
         self.actions = actions
 
         self.tab_level = 1
         self.fd = open(out_file, 'w')
-        self.boiler = Boiler(self.fd)
+        self.boiler = Boilerplate(self.fd)
 
         self.parent_list = []
         self.waiting_for = {}
@@ -297,6 +316,70 @@ class Generator_Runnable:
         self.boiler.fini()
         return
 
+#
+# Generates input for C code generators
+#
+class ProgramGenerator:
+    def __init__(self):
+        #           *************
+        # fork b,10 fork c,5 exit wait fork d,17 exit wait wait
+
+        self.names = string.ascii_lowercase + string.ascii_uppercase
+        self.name_index = 1
+
+        self.used_times = {}
+        self.used_times[0] = True
+
+        return
+
+    def get_next_name(self):
+        if self.name_index == len(self.names):
+            print('program generator: out of names (too many processes)')
+            exit(1)
+        n = self.names[self.name_index]
+        self.name_index += 1
+        return n
+
+    def get_sleep_time(self):
+        return random_randint(1, 10)
+
+    def add_fork_begin(self):
+        name = self.get_next_name()
+        sleep_time = self.get_sleep_time()
+        self.actions.append('fork %s %d' % (name, sleep_time))
+        self.fork_count[self.fork_level] = 0
+        self.fork_level += 1
+        return
+
+    def add_fork_end(self):
+        self.actions.append('exit')
+        return
+            
+    def add_wait(self):
+        self.actions.append('wait')
+        return
+
+    def generate(self):
+        self.actions = []
+        self.fork_level = 0
+        self.fork_count = {}
+        self.fork_count[self.fork_level] = 0
+
+        self.num_main_forks = 3
+        self.nest_chance = 0.4
+        
+        for i in range(self.num_main_forks):
+            self.add_fork_begin()
+            self.add_fork_end()
+
+        for i in range(self.num_main_forks):
+            self.add_wait()
+            
+        return self.actions
+        
+#
+# Parses user input into program understood by C code generators
+#
 class Parser:
     def __init__(self, program):
         self.program = program
@@ -375,6 +458,9 @@ class Parser:
 
 parser = OptionParser()
 parser.add_option('-s', '--seed', default=-1, help='random seed', action='store', type='int', dest='seed')
+parser.add_option('-r', '--readable', default='read.c', help='file to read', action='store', type='string', dest='readable')
+parser.add_option('-R', '--runnable', default='run.c', help='file to run', action='store', type='string', dest='runnable')
+parser.add_option('-m', '--max_actions', default=10, help='max actions', action='store', type='int', dest='max_actions')
 parser.add_option('-A', '--action_list', default='', help='action list, instead of randomly generated ones (simple example: "fork b,10 {} wait" is a program that runs a process (called a) which then forks process b which runs for 10 seconds, and then a waits for b to complete; see README for details', action='store', type='string', dest='action_list')
 parser.add_option('-c', '--compute', help='compute answers for me', action='store_true', default=False, dest='solve')
 
@@ -383,22 +469,19 @@ parser.add_option('-c', '--compute', help='compute answers for me', action='stor
 if options.seed != -1:
     random_seed(options.seed)
 
+if options.action_list == '':
+    pg = ProgramGenerator()
+    actions = pg.generate()
+else:
+    action_list = options.action_list
+    p = Parser(action_list)
+    actions = p.parse()
 
-names = string.ascii_lowercase + string.ascii_uppercase
-name_index = 1
+print(actions)
 
-used_times = {}
-used_times[0] = True
+cg_read = CodeGeneratorReadable(options.readable, actions)
+cg_read.generate()
 
-# action_list = "fork b,10 {fork c,5 {} wait} fork d,17 {} wait wait"
-# action_list = "fork b,10{} fork c,5{} fork d,8{} wait wait wait"
-
-P = Parser(options.action_list)
-actions = P.parse()
-
-G = Generator_Readable('m_read.c', actions)
-G.generate()
-
-G = Generator_Runnable('m_run.c', actions)
-G.generate()
+cg_run = CodeGeneratorRunnable(options.runnable, actions)
+cg_run.generate()
 
