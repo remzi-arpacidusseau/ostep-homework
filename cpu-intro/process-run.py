@@ -77,15 +77,15 @@ class scheduler:
         return
 
     # program looks like this:
-    #   c7,i10,c1,i100
+    #   c7,i,c1,i
     # which means
-    #   compute for 7, then i/o for 10, then compute for 1, then i/o for 100
+    #   compute for 7, then i/o, then compute for 1, then i/o
     def load_program(self, program):
         proc_id = self.new_process()
         for line in program.split(','):
             opcode = line[0]
-            num = int(line[1:])
             if opcode == 'c': # compute
+                num = int(line[1:])
                 for i in range(num):
                     self.proc_info[proc_id][PROC_CODE].append(DO_COMPUTE)
             elif opcode == 'i':
