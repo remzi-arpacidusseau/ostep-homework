@@ -56,6 +56,7 @@ class scheduler:
         self.proc_info[proc_id][PROC_STATE] = STATE_READY
         return proc_id
 
+    # is this dead code? why is it here? no one knows...
     def load_file(self, progfile):
         fd = open(progfile)
         proc_id = self.new_process()
@@ -73,6 +74,25 @@ class scheduler:
                 assert(len(tmp) == 1)
                 self.proc_info[proc_id][PROC_CODE].append(DO_IO)
         fd.close()
+        return
+
+    # program looks like this:
+    #   c7,i10,c1,i100
+    # which means
+    #   compute for 7, then i/o for 10, then compute for 1, then i/o for 100
+    def load_program(self, program):
+        proc_id = self.new_process()
+        for line in program.split(','):
+            opcode = line[0]
+            num = int(line[1:])
+            if opcode == 'c': # compute
+                for i in range(num):
+                    self.proc_info[proc_id][PROC_CODE].append(DO_COMPUTE)
+            elif opcode == 'i':
+                self.proc_info[proc_id][PROC_CODE].append(DO_IO)
+            else:
+                print('bad opcode %s (should be c or i)' % opcode)
+                exit(1)
         return
 
     def load(self, program_description):
@@ -276,32 +296,29 @@ class scheduler:
 
 parser = OptionParser()
 parser.add_option('-s', '--seed', default=0, help='the random seed', action='store', type='int', dest='seed')
-parser.add_option('-l', '--processlist', default='',
-                  help='a comma-separated list of processes to run, in the form X1:Y1,X2:Y2,... where X is the number of instructions that process should run, and Y the chances (from 0 to 100) that an instruction will use the CPU or issue an IO',
-                  action='store', type='string', dest='process_list')
+parser.add_option('-P', '--program', default='', help='more specific controls over programs', action='store', type='string', dest='program')
+parser.add_option('-l', '--processlist', default='', help='a comma-separated list of processes to run, in the form X1:Y1,X2:Y2,... where X is the number of instructions that process should run, and Y the chances (from 0 to 100) that an instruction will use the CPU or issue an IO', action='store', type='string', dest='process_list')
 parser.add_option('-L', '--iolength', default=5, help='how long an IO takes', action='store', type='int', dest='io_length')
-parser.add_option('-S', '--switch', default='SWITCH_ON_IO',
-                  help='when to switch between processes: SWITCH_ON_IO, SWITCH_ON_END',
-                  action='store', type='string', dest='process_switch_behavior')
-parser.add_option('-I', '--iodone', default='IO_RUN_LATER',
-                  help='type of behavior when IO ends: IO_RUN_LATER, IO_RUN_IMMEDIATE',
-                  action='store', type='string', dest='io_done_behavior')
+parser.add_option('-S', '--switch', default='SWITCH_ON_IO', help='when to switch between processes: SWITCH_ON_IO, SWITCH_ON_END', action='store', type='string', dest='process_switch_behavior')
+parser.add_option('-I', '--iodone', default='IO_RUN_LATER', help='type of behavior when IO ends: IO_RUN_LATER, IO_RUN_IMMEDIATE', action='store', type='string', dest='io_done_behavior')
 parser.add_option('-c', help='compute answers for me', action='store_true', default=False, dest='solve')
 parser.add_option('-p', '--printstats', help='print statistics at end; only useful with -c flag (otherwise stats are not printed)', action='store_true', default=False, dest='print_stats')
 (options, args) = parser.parse_args()
 
 random_seed(options.seed)
 
-assert(options.process_switch_behavior == SCHED_SWITCH_ON_IO or \
-       options.process_switch_behavior == SCHED_SWITCH_ON_END)
-assert(options.io_done_behavior == IO_RUN_IMMEDIATE or \
-       options.io_done_behavior == IO_RUN_LATER)
+assert(options.process_switch_behavior == SCHED_SWITCH_ON_IO or options.process_switch_behavior == SCHED_SWITCH_ON_END)
+assert(options.io_done_behavior == IO_RUN_IMMEDIATE or options.io_done_behavior == IO_RUN_LATER)
 
 s = scheduler(options.process_switch_behavior, options.io_done_behavior, options.io_length)
 
-# example process description (10:100,10:100)
-for p in options.process_list.split(','):
-    s.load(p)
+if options.program != '':
+    for p in options.program.split(':'):
+        s.load_program(p)
+else:
+    # example process description (10:100,10:100)
+    for p in options.process_list.split(','):
+        s.load(p)
 
 if options.solve == False:
     print('Produce a trace of what would happen when you run these processes:')
