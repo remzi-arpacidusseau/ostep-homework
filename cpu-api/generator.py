@@ -4,6 +4,7 @@ from __future__ import print_function
 import random
 import re
 import string
+import os
 from optparse import OptionParser
 
 #
@@ -156,13 +157,17 @@ class Boilerplate:
     
 
 class CodeGeneratorReadable:
-    def __init__(self, out_file, actions):
-        self.out_file = out_file
+    def __init__(self, out_file_base, actions):
+        self.out_file = out_file_base + '.c'
         self.actions = actions
 
         self.tab_level = 1
-        self.fd = open(out_file, 'w')
+        self.fd = open(self.out_file, 'w')
         self.boiler = Boilerplate(self.fd)
+        return
+
+    def __fini__(self):
+        self.fd.close()
         return
 
     def tab(self):
@@ -222,21 +227,26 @@ class CodeGeneratorReadable:
                 exit(1)
                 return
         self.boiler.fini()
+        self.__fini__()
         return
 
 class CodeGeneratorRunnable:
-    def __init__(self, out_file, actions):
-        self.out_file = out_file
+    def __init__(self, out_file_base, actions):
+        self.out_file = out_file_base + '.c'
         self.actions = actions
 
         self.tab_level = 1
-        self.fd = open(out_file, 'w')
+        self.fd = open(self.out_file, 'w')
         self.boiler = Boilerplate(self.fd)
 
         self.parent_list = []
         self.waiting_for = {}
 
         self.used_times = {}
+        return
+
+    def __fini__(self):
+        self.fd.close()
         return
 
     def tab(self):
@@ -270,8 +280,8 @@ class CodeGeneratorRunnable:
     def add_exit(self):
         # MUST HAVE DONE ALL WAITS(!)
         if len(self.waiting_for[self.curr_thread]) > 0:
-            printf('error: thread cannot exit without performing all needed waits')
-            printf('  thread %s has outstanding children:' % self.curr_thread, self.waiting_for[self.curr_thread])
+            print('error: thread cannot exit without performing all needed waits')
+            print('  thread %s has outstanding children:' % self.curr_thread, self.waiting_for[self.curr_thread])
             exit(1)
         self.tab()
         self.fd.write('End(\"%s\");\n' % self.curr_thread)
@@ -314,15 +324,15 @@ class CodeGeneratorRunnable:
                 exit(1)
                 return
         self.boiler.fini()
+        self.__fini__()
         return
 
 #
 # Generates input for C code generators
 #
 class ProgramGenerator:
-    def __init__(self):
-        #           *************
-        # fork b,10 fork c,5 exit wait fork d,17 exit wait wait
+    def __init__(self, num_actions):
+        self.num_actions = num_actions
 
         self.names = string.ascii_lowercase + string.ascii_uppercase
         self.name_index = 1
@@ -347,33 +357,66 @@ class ProgramGenerator:
         name = self.get_next_name()
         sleep_time = self.get_sleep_time()
         self.actions.append('fork %s %d' % (name, sleep_time))
-        self.fork_count[self.fork_level] = 0
+        self.need_wait[self.fork_level] += 1
         self.fork_level += 1
+        self.need_wait[self.fork_level] = 0
         return
 
     def add_fork_end(self):
         self.actions.append('exit')
+        self.fork_level -= 1
         return
-            
+
     def add_wait(self):
         self.actions.append('wait')
+        self.need_wait[self.fork_level] -= 1
         return
+
+    def clean_up(self):
+        n = self.need_wait[self.fork_level]
+        for i in range(n):
+            self.actions.append('wait')
+        if self.fork_level > 0:
+            self.actions.append('exit')
+        return n + 1
 
     def generate(self):
         self.actions = []
         self.fork_level = 0
-        self.fork_count = {}
-        self.fork_count[self.fork_level] = 0
+        self.need_wait = {}
+        self.need_wait[self.fork_level] = 0
 
-        self.num_main_forks = 3
-        self.nest_chance = 0.4
-        
-        for i in range(self.num_main_forks):
-            self.add_fork_begin()
-            self.add_fork_end()
+        self.fork_chance = 0.4
+        self.wait_chance = 0.7
+        self.exit_chance = 1.0
 
-        for i in range(self.num_main_forks):
-            self.add_wait()
+        n = 0
+        while n < self.num_actions:
+            r = random.random()
+            if r < self.fork_chance:
+                print('fork')
+                self.add_fork_begin()
+                n += 1
+            elif r < self.wait_chance:
+                print('wait?')
+                if self.need_wait[self.fork_level] > 0:
+                    print('wait')
+                    self.add_wait()
+                    n += 1
+            else:    
+                print('exit')
+                if self.fork_level > 0:
+                    # must do all needed waits now
+                    # self.add_fork_end()
+                    n += self.clean_up()
+                    self.fork_level -= 1
+            # diagnostics
+            print('level', self.fork_level, 'actions', self.actions, 'nw', self.need_wait[self.fork_level])
+
+        # clean up:
+        while self.fork_level >= 0:
+            self.clean_up()
+            self.fork_level -= 1
             
         return self.actions
         
@@ -458,9 +501,9 @@ class Parser:
 
 parser = OptionParser()
 parser.add_option('-s', '--seed', default=-1, help='random seed', action='store', type='int', dest='seed')
-parser.add_option('-r', '--readable', default='read.c', help='file to read', action='store', type='string', dest='readable')
-parser.add_option('-R', '--runnable', default='run.c', help='file to run', action='store', type='string', dest='runnable')
-parser.add_option('-m', '--max_actions', default=10, help='max actions', action='store', type='int', dest='max_actions')
+parser.add_option('-r', '--readable', default='read', help='file to read (e.g., read.c)', action='store', type='string', dest='readable')
+parser.add_option('-R', '--runnable', default='run', help='file to run (e.g., run.c)', action='store', type='string', dest='runnable')
+parser.add_option('-n', '--num_actions', default=10, help='num actions', action='store', type='int', dest='num_actions')
 parser.add_option('-A', '--action_list', default='', help='action list, instead of randomly generated ones (simple example: "fork b,10 {} wait" is a program that runs a process (called a) which then forks process b which runs for 10 seconds, and then a waits for b to complete; see README for details', action='store', type='string', dest='action_list')
 parser.add_option('-c', '--compute', help='compute answers for me', action='store_true', default=False, dest='solve')
 
@@ -470,7 +513,7 @@ if options.seed != -1:
     random_seed(options.seed)
 
 if options.action_list == '':
-    pg = ProgramGenerator()
+    pg = ProgramGenerator(options.num_actions)
     actions = pg.generate()
 else:
     action_list = options.action_list
@@ -485,3 +528,17 @@ cg_read.generate()
 cg_run = CodeGeneratorRunnable(options.runnable, actions)
 cg_run.generate()
 
+# now either list the code, or run it
+if options.solve:
+    os.system('gcc -o %s %s.c -Wall' % (options.runnable, options.runnable))
+    os.system('./%s' % options.runnable)
+else:
+    print('cat %s.c' % options.readable)
+    stream = os.popen('cat %s.c' % options.readable)
+    output = stream.read()
+    print(output)
+    # rc = os.system('cat %s.c' % options.readable)
+    # print(rc)
+
+    
+    
