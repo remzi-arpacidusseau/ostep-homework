@@ -154,7 +154,7 @@ finished, it moves to the DONE state, while 1 runs. When 1 finishes, the trace
 is done.
 
 Let's look at one more example before getting to some questions. In this
-example, the process just issues I/O requests. We specify here tht I/Os take 5
+example, the process just issues I/O requests. We specify here that I/Os take 5
 time units to complete with the flag -L.
 
 ```sh
