@@ -85,7 +85,6 @@ class scheduler:
             exit(1)
 
         num_instructions, chance_cpu = int(tmp[0]), float(tmp[1])/100.0
-        print("DEBUG > {}".format(num_instructions))
         for i in range(num_instructions):
             if random.random() < chance_cpu:
                 self.proc_info[proc_id][PROC_CODE].append(DO_COMPUTE)
