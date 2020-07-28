@@ -87,13 +87,13 @@ mustbemultipleof(asize, pagesize, 'address space must be a multiple of the pages
 mustbemultipleof(psize, pagesize, 'physical memory must be a multiple of the pagesize')
 
 # print some useful info, like the darn page table 
-pages = psize / pagesize;
+pages = psize // pagesize
 import array
 used = array.array('i')
 pt   = array.array('i')
 for i in range(0,pages):
     used.insert(i,0)
-vpages = asize / pagesize
+vpages = asize // pagesize
 
 # now, assign some pages of the VA
 vabits   = int(math.log(float(asize))/math.log(2.0))
