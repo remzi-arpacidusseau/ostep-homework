@@ -56,26 +56,6 @@ class scheduler:
         self.proc_info[proc_id][PROC_STATE] = STATE_READY
         return proc_id
 
-    # is this dead code? why is it here? no one knows...
-    def load_file(self, progfile):
-        fd = open(progfile)
-        proc_id = self.new_process()
-        
-        for line in fd:
-            tmp = line.split()
-            if len(tmp) == 0:
-                continue
-            opcode = tmp[0]
-            if opcode == 'compute':
-                assert(len(tmp) == 2)
-                for i in range(int(tmp[1])):
-                    self.proc_info[proc_id][PROC_CODE].append(DO_COMPUTE)
-            elif opcode == 'io':
-                assert(len(tmp) == 1)
-                self.proc_info[proc_id][PROC_CODE].append(DO_IO)
-        fd.close()
-        return
-
     # program looks like this:
     #   c7,i,c1,i
     # which means
@@ -266,18 +246,22 @@ class scheduler:
                     print('%10s' % ('RUN:'+instruction_to_execute), end='')
                 else:
                     print('%10s' % (self.proc_info[pid][PROC_STATE]), end='')
-            if instruction_to_execute == '':
+            if instruction_to_execute == '' and \
+                self.proc_info[self.curr_proc][PROC_STATE] != STATE_DONE:
                 print('%10s' % ' ', end='')
             else:
+                # Update table with CPU process for RUN:io or DONE
                 print('%10s' % 1, end='')
             num_outstanding = self.get_ios_in_flight(clock_tick)
             if num_outstanding > 0:
                 print('%10s' % str(num_outstanding), end='')
                 io_busy += 1
-            else:
+            elif num_outstanding <=0 and self.proc_info[self.curr_proc][PROC_STATE] != STATE_DONE:
                 print('%10s' % ' ', end='')
+            # Exit condition set PID to DONE and incrememnt cpu_busy to refelct cpu terminating process
+            if self.proc_info[self.curr_proc][PROC_STATE] == STATE_DONE:
+                cpu_busy += 1
             print('')
-
             # if this is an IO instruction, switch to waiting state
             # and add an io completion in the future
             if instruction_to_execute == DO_IO:
