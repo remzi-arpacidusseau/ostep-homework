@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) {
 
     // now the main loop: each time through, touch each integer
     // (and increment its value by 1).
-    int i = 0;
+    long long int i = 0;
     double time_since_last_print = 2.0; 
     double t = Time_GetSeconds();
     int loop_count = 0;
