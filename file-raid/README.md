@@ -152,16 +152,17 @@ LOGICAL READ from addr:9 size:4096
   read  [disk 2, offset 4]   
 ```
 
-You might notice a few things about this example. First, the mirrored RAID-1
-assumes a striped layout (which some might call RAID-01), where logical block
-0 is mapped to the 0th block of disks 0 and 1, logical block 1 is mapped to
-the 0th blocks of disks 2 and 3, and so forth (in this four-disk example).
-Second, when reading a single block from a mirrored RAID system, the RAID has
-a choice of which of two blocks to read. In this simulator, we use a
-relatively silly way: for even-numbered logical blocks, the RAID chooses the
-even-numbered disk in the pair; the odd disk is used for odd-numbered logical
-blocks. This is done to make the results of each run easy to guess for you
-(instead of, for example, a random choice). 
+You might notice a few things about this example. First, the mirrored
+RAID-1 assumes a striped layout (which some might call RAID-10, or
+stripe of mirrors), where logical block 0 is mapped to the 0th block
+of disks 0 and 1, logical block 1 is mapped to the 0th blocks of disks
+2 and 3, and so forth (in this four-disk example).  Second, when
+reading a single block from a mirrored RAID system, the RAID has a
+choice of which of two blocks to read. In this simulator, we use a
+relatively silly way: for even-numbered logical blocks, the RAID
+chooses the even-numbered disk in the pair; the odd disk is used for
+odd-numbered logical blocks. This is done to make the results of each
+run easy to guess for you (instead of, for example, a random choice).
 
 We can also explore how writes behave (instead of just reads) with the -w
 flag, which specifies the "write fraction" of a workload, i.e., the fraction
