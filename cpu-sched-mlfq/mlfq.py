@@ -246,7 +246,7 @@ while finishedJobs < totalJobs:
                 if job[j]['timeLeft'] > 0:
                     # print('-> FinalBoost %d (timeLeft %d)' % (j, job[j]['timeLeft']))
                     job[j]['currPri']   = hiQueue
-                    job[j]['ticksLeft'] = allotment[hiQueue]
+                    job[j]['ticksLeft'] = quantum[hiQueue]
             # print('BOOST END: QUEUES look like:', queue)
 
     # check for any I/Os done
