@@ -61,12 +61,17 @@ What you would then see is the specific problem definition:
 Here is the list of inputs:
 OPTIONS jobs 3
 OPTIONS queues 3
+OPTIONS allotments for queue  2 is   1
 OPTIONS quantum length for queue  2 is  10
+OPTIONS allotments for queue  1 is   1
 OPTIONS quantum length for queue  1 is  10
+OPTIONS allotments for queue  0 is   1
 OPTIONS quantum length for queue  0 is  10
 OPTIONS boost 0
-OPTIONS ioTime 0
+OPTIONS ioTime 5
 OPTIONS stayAfterIO False
+OPTIONS iobump False
+
 
 For each job, three defining characteristics are given:
   startTime : at what time does the job enter the system
@@ -76,7 +81,7 @@ For each job, three defining characteristics are given:
 
 Job List:
   Job  0: startTime   0 - runTime  84 - ioFreq   7
-  Job  1: startTime   0 - runTime  42 - ioFreq   2
+  Job  1: startTime   0 - runTime  42 - ioFreq   3
   Job  2: startTime   0 - runTime  51 - ioFreq   4
 
 Compute the execution trace for the given workloads.
@@ -112,11 +117,11 @@ IO DONE
 ...
 
 Final statistics:
-  Job  0: startTime   0 - response   0 - turnaround 175
-  Job  1: startTime   0 - response   7 - turnaround 191
-  Job  2: startTime   0 - response   9 - turnaround 168
+  Job  0: startTime   0 - response   0 - turnaround 180
+  Job  1: startTime   0 - response   7 - turnaround 161
+  Job  2: startTime   0 - response  10 - turnaround 171
 
-  Avg  2: startTime n/a - response 5.33 - turnaround 178.00
+  Avg  2: startTime n/a - response 5.67 - turnaround 170.67
 ```
 
 The trace shows exactly, on a millisecond-by-millisecond time scale, what the
