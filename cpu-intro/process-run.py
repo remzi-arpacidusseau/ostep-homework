@@ -36,6 +36,7 @@ PROC_STATE = 'proc_state_'
 # things a process can do
 DO_COMPUTE = 'cpu'
 DO_IO = 'io'
+DO_IO_DONE = 'io_done'
 
 
 class scheduler:
@@ -70,6 +71,8 @@ class scheduler:
                     self.proc_info[proc_id][PROC_CODE].append(DO_COMPUTE)
             elif opcode == 'i':
                 self.proc_info[proc_id][PROC_CODE].append(DO_IO)
+                # add one compute to HANDLE the I/O completion
+                self.proc_info[proc_id][PROC_CODE].append(DO_IO_DONE)
             else:
                 print('bad opcode %s (should be c or i)' % opcode)
                 exit(1)
@@ -90,6 +93,8 @@ class scheduler:
                 self.proc_info[proc_id][PROC_CODE].append(DO_COMPUTE)
             else:
                 self.proc_info[proc_id][PROC_CODE].append(DO_IO)
+                # add one compute to HANDLE the I/O completion
+                self.proc_info[proc_id][PROC_CODE].append(DO_IO_DONE)
         return
 
     def move_to_ready(self, expected, pid=-1):
@@ -243,18 +248,18 @@ class scheduler:
                 print('%3d ' % clock_tick, end='')
             for pid in range(len(self.proc_info)):
                 if pid == self.curr_proc and instruction_to_execute != '':
-                    print('%10s' % ('RUN:'+instruction_to_execute), end='')
+                    print('%14s' % ('RUN:'+instruction_to_execute), end='')
                 else:
-                    print('%10s' % (self.proc_info[pid][PROC_STATE]), end='')
+                    print('%14s' % (self.proc_info[pid][PROC_STATE]), end='')
             if instruction_to_execute == '' and \
                 self.proc_info[self.curr_proc][PROC_STATE] != STATE_DONE:
-                print('%10s' % ' ', end='')
+                print('%14s' % ' ', end='')
             else:
                 # Update table with CPU process for RUN:io or DONE
-                print('%10s' % 1, end='')
+                print('%14s' % 1, end='')
             num_outstanding = self.get_ios_in_flight(clock_tick)
             if num_outstanding > 0:
-                print('%10s' % str(num_outstanding), end='')
+                print('%14s' % str(num_outstanding), end='')
                 io_busy += 1
             elif num_outstanding <=0 and self.proc_info[self.curr_proc][PROC_STATE] != STATE_DONE:
                 print('%10s' % ' ', end='')
@@ -262,11 +267,12 @@ class scheduler:
             if self.proc_info[self.curr_proc][PROC_STATE] == STATE_DONE:
                 cpu_busy += 1
             print('')
-            # if this is an IO instruction, switch to waiting state
+
+            # if this is an IO start instruction, switch to waiting state
             # and add an io completion in the future
             if instruction_to_execute == DO_IO:
                 self.move_to_wait(STATE_RUNNING)
-                self.io_finish_times[self.curr_proc].append(clock_tick + self.io_length)
+                self.io_finish_times[self.curr_proc].append(clock_tick + self.io_length + 1)
                 if self.process_switch_behavior == SCHED_SWITCH_ON_IO:
                     self.next_proc()
 
@@ -303,6 +309,8 @@ else:
     # example process description (10:100,10:100)
     for p in options.process_list.split(','):
         s.load(p)
+
+assert(options.io_length >= 0)
 
 if options.solve == False:
     print('Produce a trace of what would happen when you run these processes:')
