@@ -312,12 +312,12 @@ if options.solve == False:
             print('  %s' % s.get_instruction(pid, inst))
         print('')
     print('Important behaviors:')
-    print('  System will switch when', end='')
+    print('  System will switch when ', end='')
     if options.process_switch_behavior == SCHED_SWITCH_ON_IO:
         print('the current process is FINISHED or ISSUES AN IO')
     else:
         print('the current process is FINISHED')
-    print('  After IOs, the process issuing the IO will', end='')
+    print('  After IOs, the process issuing the IO will ', end='')
     if options.io_done_behavior == IO_RUN_IMMEDIATE:
         print('run IMMEDIATELY')
     else:
