@@ -380,38 +380,43 @@ class ProgramGenerator:
             self.actions.append('exit')
         return n + 1
 
-    def generate(self):
+    def generate(self, fork_chance, wait_chance, exit_chance):
         self.actions = []
         self.fork_level = 0
         self.need_wait = {}
         self.need_wait[self.fork_level] = 0
 
-        self.fork_chance = 0.4
-        self.wait_chance = 0.7
-        self.exit_chance = 1.0
+        total_chance = fork_chance + wait_chance + exit_chance
+        if total_chance != 100:
+            print('fork/wait/exit chance must sum to 100, but sums to', total_chance)
+            exit(1)
+
+        self.fork_chance = float(fork_chance) / 100.0
+        self.wait_chance = float(fork_chance + wait_chance) / 100.0
+        # the rest is 'exit_chance'
 
         n = 0
         while n < self.num_actions:
             r = random.random()
             if r < self.fork_chance:
-                print('fork')
+                # print('fork')
                 self.add_fork_begin()
                 n += 1
             elif r < self.wait_chance:
-                print('wait?')
+                # print('wait?')
                 if self.need_wait[self.fork_level] > 0:
-                    print('wait')
+                    # print('wait')
                     self.add_wait()
                     n += 1
             else:    
-                print('exit')
+                # print('exit')
                 if self.fork_level > 0:
                     # must do all needed waits now
                     # self.add_fork_end()
                     n += self.clean_up()
                     self.fork_level -= 1
             # diagnostics
-            print('level', self.fork_level, 'actions', self.actions, 'nw', self.need_wait[self.fork_level])
+            # print('level', self.fork_level, 'actions', self.actions, 'nw', self.need_wait[self.fork_level])
 
         # clean up:
         while self.fork_level >= 0:
@@ -501,9 +506,12 @@ class Parser:
 
 parser = OptionParser()
 parser.add_option('-s', '--seed', default=-1, help='random seed', action='store', type='int', dest='seed')
-parser.add_option('-r', '--readable', default='read', help='file to read (e.g., read.c)', action='store', type='string', dest='readable')
-parser.add_option('-R', '--runnable', default='run', help='file to run (e.g., run.c)', action='store', type='string', dest='runnable')
+parser.add_option('-r', '--readable', default='read', help='file to read (e.g., "read", to produce read.c)', action='store', type='string', dest='readable')
+parser.add_option('-R', '--runnable', default='run', help='file to run (e.g., "run", to produce run.c)', action='store', type='string', dest='runnable')
 parser.add_option('-n', '--num_actions', default=10, help='num actions', action='store', type='int', dest='num_actions')
+parser.add_option('-f', '--fork_chance', default=30, help='chances that a program will fork', action='store', type='int', dest='fork_chance')
+parser.add_option('-w', '--wait_chance', default=40, help='chances that a program will wait', action='store', type='int', dest='wait_chance')
+parser.add_option('-e', '--exit_chance', default=30, help='chances that a program will exit', action='store', type='int', dest='exit_chance')
 parser.add_option('-A', '--action_list', default='', help='action list, instead of randomly generated ones (simple example: "fork b,10 {} wait" is a program that runs a process (called a) which then forks process b which runs for 10 seconds, and then a waits for b to complete; see README for details', action='store', type='string', dest='action_list')
 parser.add_option('-c', '--compute', help='compute answers for me', action='store_true', default=False, dest='solve')
 
@@ -514,13 +522,13 @@ if options.seed != -1:
 
 if options.action_list == '':
     pg = ProgramGenerator(options.num_actions)
-    actions = pg.generate()
+    actions = pg.generate(options.fork_chance, options.wait_chance, options.exit_chance)
 else:
     action_list = options.action_list
     p = Parser(action_list)
     actions = p.parse()
 
-print(actions)
+# print(actions)
 
 cg_read = CodeGeneratorReadable(options.readable, actions)
 cg_read.generate()
@@ -533,7 +541,7 @@ if options.solve:
     os.system('gcc -o %s %s.c -Wall' % (options.runnable, options.runnable))
     os.system('./%s' % options.runnable)
 else:
-    print('cat %s.c' % options.readable)
+    # print('cat %s.c' % options.readable)
     stream = os.popen('cat %s.c' % options.readable)
     output = stream.read()
     print(output)
