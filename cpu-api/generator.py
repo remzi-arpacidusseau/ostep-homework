@@ -177,7 +177,7 @@ class CodeGeneratorReadable:
 
     def add_thread(self, thread_id):
         self.tab()
-        self.fd.write('// thread %s\n' % thread_id)
+        self.fd.write('// process %s\n' % thread_id)
         return
 
     def add_fork(self):
@@ -331,8 +331,9 @@ class CodeGeneratorRunnable:
 # Generates input for C code generators
 #
 class ProgramGenerator:
-    def __init__(self, num_actions):
+    def __init__(self, num_actions, max_sleep_time):
         self.num_actions = num_actions
+        self.max_sleep_time = max_sleep_time
 
         self.names = string.ascii_lowercase + string.ascii_uppercase
         self.name_index = 1
@@ -351,7 +352,7 @@ class ProgramGenerator:
         return n
 
     def get_sleep_time(self):
-        return random_randint(1, 10)
+        return random_randint(1, self.max_sleep_time)
 
     def add_fork_begin(self):
         name = self.get_next_name()
@@ -512,7 +513,8 @@ parser.add_option('-n', '--num_actions', default=10, help='num actions', action=
 parser.add_option('-f', '--fork_chance', default=30, help='chances that a program will fork', action='store', type='int', dest='fork_chance')
 parser.add_option('-w', '--wait_chance', default=40, help='chances that a program will wait', action='store', type='int', dest='wait_chance')
 parser.add_option('-e', '--exit_chance', default=30, help='chances that a program will exit', action='store', type='int', dest='exit_chance')
-parser.add_option('-A', '--action_list', default='', help='action list, instead of randomly generated ones (simple example: "fork b,10 {} wait" is a program that runs a process (called a) which then forks process b which runs for 10 seconds, and then a waits for b to complete; see README for details', action='store', type='string', dest='action_list')
+parser.add_option('-S', '--sleep_time', default=10, help='max sleep time for a process', action='store', type='int', dest='max_sleep_time')
+parser.add_option('-A', '--action_list', default='none', help='action list, instead of randomly generated ones (simple example: "fork b,10 {} wait" is a program that runs a process (called a) which then forks process b which runs for 10 seconds, and then a waits for b to complete; see README for details', action='store', type='string', dest='action_list')
 parser.add_option('-c', '--compute', help='compute answers for me', action='store_true', default=False, dest='solve')
 
 (options, args) = parser.parse_args()
@@ -520,8 +522,24 @@ parser.add_option('-c', '--compute', help='compute answers for me', action='stor
 if options.seed != -1:
     random_seed(options.seed)
 
-if options.action_list == '':
-    pg = ProgramGenerator(options.num_actions)
+if options.max_sleep_time < 1:
+    print('max sleep time must be >= 1')
+    exit(1)
+
+if options.fork_chance < 1 or options.fork_chance > 99:
+    print('fork chance must be between 1 and 99')
+    exit(1)
+
+if options.wait_chance < 1 or options.wait_chance > 99:
+    print('wait chance must be between 1 and 99')
+    exit(1)
+
+if options.exit_chance < 1 or options.exit_chance > 99:
+    print('exit chance must be between 1 and 99')
+    exit(1)
+
+if options.action_list == 'none':
+    pg = ProgramGenerator(options.num_actions, options.max_sleep_time)
     actions = pg.generate(options.fork_chance, options.wait_chance, options.exit_chance)
 else:
     action_list = options.action_list
