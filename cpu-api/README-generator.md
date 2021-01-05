@@ -119,6 +119,20 @@ program exactly. For example:
 prompt> ./generator.py -A "fork b,1 {} wait"
 ```
 
+The resulting C code:
+```c
+int main(int argc, char *argv[]) {
+    // process a
+    if (fork_or_die() == 0) {
+        sleep(1);
+        // process b
+        exit(0);
+    }
+    wait_or_die();
+    return 0;
+}
+```
+
 This command creates the default process ("a"), which then creates "b"
 which sleeps for 1 but doesn't do anything else; in the meanwhile, "a"
 then waits for "b" to complete.
