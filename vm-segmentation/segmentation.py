@@ -106,9 +106,9 @@ if base1 == -1:
 else:
     base1 = base1 - len1
 
-abort_if(psize < base0 + len0 - 1, 'seg0 is not in physical memory')
-abort_if(psize < base1, 'seg1 is not in physical memory')
-    
+abort_if((0 > base0) or (psize < base0 + len0), 'seg0 is not in physical memory')
+abort_if((0 > base1) or (psize < base1 + len1), 'seg1 is not in physical memory')
+
 abort_if(len0 > asize/2.0, 'length0 register is too large for this address space')
 abort_if(len1 > asize/2.0, 'length1 register is too large for this address space')
 
