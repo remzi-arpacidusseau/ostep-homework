@@ -76,7 +76,7 @@ For each job, three defining characteristics are given:
 
 Job List:
   Job  0: startTime   0 - runTime  84 - ioFreq   7
-  Job  1: startTime   0 - runTime  42 - ioFreq   2
+  Job  1: startTime   0 - runTime  42 - ioFreq   3
   Job  2: startTime   0 - runTime  51 - ioFreq   4
 
 Compute the execution trace for the given workloads.
