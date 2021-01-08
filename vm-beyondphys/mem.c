@@ -50,7 +50,7 @@ int main(int argc, char *argv[]) {
 	    double delta_time = Time_GetSeconds() - t;
 	    time_since_last_print += delta_time;
 	    if (time_since_last_print >= 0.2) { // only print every .2 seconds
-		printf("loop %d in %.2f ms (bandwidth: %.2f MB/s)\n", 
+		printf("loop %d in %.2f s (bandwidth: %.2f MB/s)\n", 
 		       loop_count, 1000 * delta_time, 
 		       size_in_bytes / (1024.0*1024.0*delta_time));
 		time_since_last_print = 0;
