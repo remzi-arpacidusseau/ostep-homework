@@ -16,7 +16,7 @@ double Time_GetSeconds() {
 // and then proceeeds to update each int in a loop, forever.
 int main(int argc, char *argv[]) {
     if (argc != 2) {
-	fprintf(stderr, "usage: spin <memory (MB)>\n");
+	fprintf(stderr, "usage: %s <memory (MB)>\n", argv[0]);
 	exit(1);
     }
     long long int size = (long long int) atoi(argv[1]);
