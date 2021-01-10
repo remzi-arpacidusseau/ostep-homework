@@ -200,9 +200,9 @@ class scheduler:
         # OUTPUT: headers for each column
         print('%s' % 'Time', end='') 
         for pid in range(len(self.proc_info)):
-            print('%10s' % ('PID:%2d' % (pid)), end='')
-        print('%10s' % 'CPU', end='')
-        print('%10s' % 'IOs', end='')
+            print('%14s' % ('PID:%2d' % (pid)), end='')
+        print('%14s' % 'CPU', end='')
+        print('%14s' % 'IOs', end='')
         print('')
 
         # init statistics
@@ -251,21 +251,20 @@ class scheduler:
                     print('%14s' % ('RUN:'+instruction_to_execute), end='')
                 else:
                     print('%14s' % (self.proc_info[pid][PROC_STATE]), end='')
-            if instruction_to_execute == '' and \
-                self.proc_info[self.curr_proc][PROC_STATE] != STATE_DONE:
+
+            # CPU output here: if no instruction executes, output a space, otherwise a 1 
+            if instruction_to_execute == '':
                 print('%14s' % ' ', end='')
             else:
-                # Update table with CPU process for RUN:io or DONE
-                print('%14s' % 1, end='')
+                print('%14s' % '1', end='')
+
+            # IO output here:
             num_outstanding = self.get_ios_in_flight(clock_tick)
             if num_outstanding > 0:
                 print('%14s' % str(num_outstanding), end='')
                 io_busy += 1
-            elif num_outstanding <=0 and self.proc_info[self.curr_proc][PROC_STATE] != STATE_DONE:
+            else:
                 print('%10s' % ' ', end='')
-            # Exit condition set PID to DONE and incrememnt cpu_busy to refelct cpu terminating process
-            if self.proc_info[self.curr_proc][PROC_STATE] == STATE_DONE:
-                cpu_busy += 1
             print('')
 
             # if this is an IO start instruction, switch to waiting state
