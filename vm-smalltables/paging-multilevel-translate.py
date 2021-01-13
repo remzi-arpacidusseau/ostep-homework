@@ -197,7 +197,7 @@ class OS:
         for i in range(0, self.physMem / self.pageSize):
             print('page %3d:' %  i, end='')
             for j in range(0, self.pageSize):
-                print('%02x' % self.memory[(i * self.pageSize) + j], end='')
+                print('%02x ' % self.memory[(i * self.pageSize) + j], end='')
             print('')
 
     def getPDBR(self, pid):
