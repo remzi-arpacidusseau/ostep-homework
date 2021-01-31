@@ -166,8 +166,8 @@ flag sets the `%dx` register to the value 3 to start with.
 
 As you can see from the trace, the `sub` instruction slowly lowers the value
 of %dx. The first few times `test` is called, only the ">=", ">", and "!="
-conditions get set. However, the last `test` in the trace finds %dx and 0 to
-be equal, and thus the subsequent jump does NOT take place, and the program
+conditions get set. However, the last `test` in the trace finds %dx less than
+0, and thus the subsequent jump does NOT take place, and the program
 finally halts.
 
 Now, finally, we get to a more interesting case, i.e., a race condition with
