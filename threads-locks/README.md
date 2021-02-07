@@ -127,7 +127,7 @@ sub  $1,%dx
 test $0,%dx     
 jgte .top         
 halt
-```sh
+```
 
 A few things have been introduced here. First is the `test` instruction.
 This instruction takes two arguments and compares them; it then sets implicit
@@ -158,7 +158,10 @@ prompt> ./x86.py -p loop.s -t 1 -a dx=3 -R dx -C -c
     0   1  1  0  0  1  0  1000 sub  $1,%dx
     0   1  0  1  0  0  1  1001 test $0,%dx
     0   1  0  1  0  0  1  1002 jgte .top
-    0   1  0  1  0  0  1  1003 halt
+   -1   1  0  1  0  0  1  1000 sub  $1,%dx
+   -1   0  0  1  1  1  0  1001 test $0,%dx
+   -1   0  0  1  1  1  0  1002 jgte .top
+   -1   0  0  1  1  1  0  1003 halt
 ```
 
 The `-R dx` flag traces the value of %dx; the `-C` flag traces the values of
@@ -167,14 +170,14 @@ flag sets the `%dx` register to the value 3 to start with.
 
 As you can see from the trace, the `sub` instruction slowly lowers the value
 of %dx. The first few times `test` is called, only the ">=", ">", and "!="
-conditions get set. However, the last `test` in the trace finds %dx and 0 to
-be equal, and thus the subsequent jump does NOT take place, and the program
-finally halts.
+conditions get set. However, the last `test` in the trace finds %dx less than
+0, and thus the subsequent jump does NOT take place, and the program finally
+halts.
 
 Now, finally, we get to a more interesting case, i.e., a race condition with
 multiple threads. Let's look at the code first:
 
-```sh
+```
 .main
 .top
 # critical section
@@ -194,8 +197,8 @@ The code has a critical section which loads the value of a variable
 (at address 2000), then adds 1 to the value, then stores it back. 
 
 The code after just decrements a loop counter (in `%bx`), tests if it
-is greater than or equal to zero, and if so, jumps back to the top
-to the critical section again.
+is greater than zero, and if so, jumps back to the top to the critical
+section again.
 
 ```sh
 prompt> ./x86.py -p looping-race-nolock.s -t 2 -a bx=1 -M 2000 -c
@@ -266,7 +269,7 @@ and the PC and a stack pointer `%sp`.
 
 The full set of instructions simulated are:
 
-```sh
+```
 mov immediate, register     # moves immediate value to register
 mov memory, register        # loads from memory into register
 mov register, register      # moves value from one register to other
