@@ -5,8 +5,8 @@ In this homework, you'll use a real tool on Linux to find problems in
 multi-threaded code. The tool is called `helgrind` (available as part of the
 valgrind suite of debugging tools).
 
-See [hg-manual](https://www.valgrind.org/docs/manual/hg-manual.html) for details about
-the tool, including how to download and install it (if it's not
+See [hg-manual](https://www.valgrind.org/docs/manual/hg-manual.html) for details
+about the tool, including how to download and install it (if it's not
 already on your Linux system).
 
 You'll then look at a number of multi-threaded C programs to see how you can
