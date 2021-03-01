@@ -169,6 +169,9 @@ class Forker:
 
     def do_exit(self, p):
         # remove the process from the process list
+        if p == self.root_name:
+            print('root process: cannot exit')
+            exit(1)
         exit_parent = self.parents[p]
         self.process_list.remove(p)
 
