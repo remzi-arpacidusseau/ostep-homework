@@ -397,7 +397,7 @@ that can be configured to run periodically. This behavior is controlled by the
 -G and -g flags, which set the high and low watermarks for determining whether
 the garbage collector should run. Setting the high watermark to a value N
 (i.e., -G N) means that when the GC notices that N blocks are in use, it
-should run. Setting the low watermark to M (i.e., -G M) means that the GC
+should run. Setting the low watermark to M (i.e., -g M) means that the GC
 should run until only M blocks are in use. 
 
 The -J flag is also useful here: it shows which low-level commands the GC
