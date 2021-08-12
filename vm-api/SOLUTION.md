@@ -34,3 +34,15 @@ With gdb, there does not appear to be any identified issues.
 Valgrind did identify the memory leak:
 ==1466== LEAK SUMMARY:
 ==1466==    definitely lost: 4 bytes in 1 blocks
+
+# Question 5
+
+When I run malloc-array, the program runs successfully and exits without error.
+
+As with Question 4, valgrind did identify the memory leak:
+==1536== LEAK SUMMARY:
+==1536==    definitely lost: 400 bytes in 1 blocks
+
+Is this program correct? I believe it's observed behavior is correct,
+but it is unexpected to have a memory leak.
+In that regard, the program is not correct.
