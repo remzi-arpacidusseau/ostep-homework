@@ -46,3 +46,13 @@ As with Question 4, valgrind did identify the memory leak:
 Is this program correct? I believe it's observed behavior is correct,
 but it is unexpected to have a memory leak.
 In that regard, the program is not correct.
+
+# Question 6
+
+The program does run. When run with Valgrind, receive the following error:
+==1324== Invalid read of size 4
+
+# Question 7
+
+I attempt a read of `data[50]`. The program runs without problem. Valgrind
+does identify the problem as a read of memory that had been freed.
