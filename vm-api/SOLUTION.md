@@ -56,3 +56,14 @@ The program does run. When run with Valgrind, receive the following error:
 
 I attempt a read of `data[50]`. The program runs without problem. Valgrind
 does identify the problem as a read of memory that had been freed.
+
+# Question 8
+
+As expected, when the vector is constructed of an array, its gets
+are order of magnitude more performant than the vector as a list.
+However, the vector as a list has slightly more perfomant adds.
+When testing the adds, the list performed slightly better.
+However, I believe the difference could be more significant in certain
+situations when using realloc. If there are not contiguous memory
+blocks, realloc will need to move all existing data. This will slow
+performance of the array vector.
