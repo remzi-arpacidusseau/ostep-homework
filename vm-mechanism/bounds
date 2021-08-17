@@ -1,0 +1,19 @@
+#!/bin/bash
+
+NUM_PER_RUN=100
+
+for LIMIT in 10 100 1000 10000;
+do
+  TOTAL=0;
+  VALID=0;
+  for SEED in 0 1 2 3 4;
+  do
+    TOTAL=$((TOTAL+NUM_PER_RUN));
+    THIS_VALID=$(./relocation.py \
+      -s $SEED -l $LIMIT -n $NUM_PER_RUN -c \
+      | grep -o VALID \
+      | wc -l);
+    VALID=$((VALID+THIS_VALID));
+  done
+  echo "Limit $LIMIT: $VALID/$TOTAL"
+done
