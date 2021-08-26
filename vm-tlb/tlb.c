@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <sys/time.h>
 
-#define OUTER_ITERATIONS (100000000L)
+#define OUTER_ITERATIONS (1000000L)
 
 int main(int argc, char* argv[]) {
   if (argc != 3) {
@@ -31,22 +31,25 @@ int main(int argc, char* argv[]) {
 
   long long total_accesses = OUTER_ITERATIONS * a_size;
   long diff_sec = end_tv->tv_sec - start_tv->tv_sec;
-  int diff_usec = end_tv->tv_usec - start_tv->tv_usec;
+  long diff_usec = end_tv->tv_usec - start_tv->tv_usec;
   long total_usec = (1000000 * diff_sec) + diff_usec;
   double usec_per_access = ((double) total_usec) / total_accesses;
   double nsec_per_access = usec_per_access * 1000;
   double nsec_per_access_v2 = ((double) total_usec) / (total_accesses / 1000);
 
 
-  printf("start sec: %ld, start us: %d\n", start_tv->tv_sec, start_tv->tv_usec);
-  printf("end sec: %ld, end us: %d\n", end_tv->tv_sec, end_tv->tv_usec);
-  printf("diff sec: %ld, diff us: %d\n", diff_sec, diff_usec);
+  printf("start sec: %ld, start us: %ld\n", start_tv->tv_sec, start_tv->tv_usec);
+  printf("end sec: %ld, end us: %ld\n", end_tv->tv_sec, end_tv->tv_usec);
+  printf("diff sec: %ld, diff us: %ld\n", diff_sec, diff_usec);
   printf("total usec: %ld\n", total_usec);
   printf("a_size: %d\n", a_size);
   printf("total accesses: %lld\n", total_accesses);
   printf("usec per access: %f\n", usec_per_access);
   printf("nsec per access: %f\n", nsec_per_access);
   printf("nsec per access_v2: %f\n", nsec_per_access_v2);
+
+  free(start_tv);
+  free(end_tv);
 
   printf("done\n");
 }
