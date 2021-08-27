@@ -1,6 +1,11 @@
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
+#include <unistd.h>
+#include <pthread.h>
+
+int stick_this_thread_to_core(int core_id);
 
 int main(int argc, char* argv[]) {
   if (argc != 4) {
@@ -13,38 +18,37 @@ int main(int argc, char* argv[]) {
   
   int ints_per_page = pagesize / sizeof(int);
   int a_size = num_pages * ints_per_page;
-  int* a = (int*) malloc(sizeof(int) * a_size);
+  int* a = (int*) calloc(a_size, sizeof(int));
 
   if (a == NULL) {
     perror("malloc array failed");
     return 0;
   }
 
-  // Initialize array to 0s
-  for (int i = 0; i < a_size; i++) {
-    a[i] = 0;
-  }
-
   struct timeval* start_tv = (struct timeval*) malloc(sizeof(start_tv));
   struct timeval* end_tv = (struct timeval*) malloc(sizeof(end_tv));
 
+  cpu_set_t cpuset;
+  pthread_t thread;
+  thread = pthread_self();
+  CPU_ZERO(&cpuset);
+  CPU_SET(0, &cpuset);
+  int s = pthread_setaffinity_np(thread, sizeof(cpuset), &cpuset);
+  if (s != 0) {
+    perror("setaffinity");
+    return 0;
+  }
 
   gettimeofday(start_tv, NULL);
 
   for (int n = 0; n < numtrials; n++) {
     for (int i = 0; i < a_size; i += ints_per_page) {
-      a[i] += 1;
+      // https://stackoverflow.com/a/2219839
+      ((int volatile *)a)[i] += 1;
     }
   }
  
   gettimeofday(end_tv, NULL);
-
-  // Access all array elements to prevent removal by compiler
-  int none = 0;
-  for (int i = 0; i < a_size; i++) {
-    none += a[i];
-  }
-  //printf("array total: %d\n", none);
 
   long long total_accesses = (long long) numtrials * num_pages;
   long diff_sec = end_tv->tv_sec - start_tv->tv_sec;
@@ -63,7 +67,8 @@ int main(int argc, char* argv[]) {
   //printf("total accesses: %lld\n", total_accesses);
   //printf("usec per access: %f\n", usec_per_access);
   //printf("nsec per access: %f\n", nsec_per_access);
-  printf("num_pages: %d, nsec_per_access: %f\n", num_pages, nsec_per_access);
+  printf("num_pages: %d, total_usec: %ld, nsec_per_access: %f\n",
+      num_pages, total_usec, nsec_per_access);
 
   free(a);
   free(start_tv);
