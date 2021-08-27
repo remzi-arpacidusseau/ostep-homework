@@ -2,15 +2,15 @@
 #include <stdlib.h>
 #include <sys/time.h>
 
-#define OUTER_ITERATIONS (1000000L)
-
 int main(int argc, char* argv[]) {
-  if (argc != 3) {
-    fprintf(stderr, "usage: tlb <pagesize> <numpages>\n");
+  if (argc != 4) {
+    fprintf(stderr, "usage: tlb <pagesize> <numpages> <numtrials>\n");
     return 0;
   }
   int pagesize = atoi(argv[1]);
   int numpages = atoi(argv[2]);
+  int numtrials = atoi(argv[3]);
+  
   int jump = pagesize / sizeof(int);
   int a_size = numpages * jump;
   int a[a_size];
@@ -21,7 +21,7 @@ int main(int argc, char* argv[]) {
 
   gettimeofday(start_tv, NULL);
 
-  for (int oi = 0; oi < OUTER_ITERATIONS; oi++) {
+  for (int n = 0; n < numtrials; n++) {
     for (int i = 0; i < a_size; i += jump) {
       a[i] += 1;
     }
@@ -29,7 +29,7 @@ int main(int argc, char* argv[]) {
  
   gettimeofday(end_tv, NULL);
 
-  long long total_accesses = OUTER_ITERATIONS * a_size;
+  long long total_accesses = (long long) numtrials * a_size;
   long diff_sec = end_tv->tv_sec - start_tv->tv_sec;
   long diff_usec = end_tv->tv_usec - start_tv->tv_usec;
   long total_usec = (1000000 * diff_sec) + diff_usec;
@@ -38,6 +38,7 @@ int main(int argc, char* argv[]) {
   double nsec_per_access_v2 = ((double) total_usec) / (total_accesses / 1000);
 
 
+  printf("numtrials: %d\n", numtrials);
   printf("start sec: %ld, start us: %ld\n", start_tv->tv_sec, start_tv->tv_usec);
   printf("end sec: %ld, end us: %ld\n", end_tv->tv_sec, end_tv->tv_usec);
   printf("diff sec: %ld, diff us: %ld\n", diff_sec, diff_usec);
