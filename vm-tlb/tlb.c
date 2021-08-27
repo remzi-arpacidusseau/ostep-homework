@@ -15,6 +15,10 @@ int main(int argc, char* argv[]) {
   int a_size = numpages * jump;
   int a[a_size];
 
+  for (int i = 0; i < a_size; i++) {
+    a[i] = 0;
+  }
+
   struct timeval* start_tv = (struct timeval*) malloc(sizeof(start_tv));
   struct timeval* end_tv = (struct timeval*) malloc(sizeof(end_tv));
 
