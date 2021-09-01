@@ -1,8 +1,22 @@
 
 # Overview
 
-Make something here that does some forks and execs and prints out the
-process tree that results; the user of the simulator should have to
-then guess at what the tree looks like given the series of fork/execs,
-or guess the call of forks/execs that lead to the process tree.
+There are now two simulators related to this chapter. The first,
+`fork.py`, is a simple tool to show what a process tree looks like
+when processes are created and destroyed. Read more about it
+[here](README-fork.md).
+
+The second is a program, `generator.py`, that creates real C programs
+that use `fork()`, `wait()`, and `exit()` to show how `fork` works in
+running programs. Read more about it [here](README-generator.md).
+
+
+
+
+
+
+
+
+
+
 

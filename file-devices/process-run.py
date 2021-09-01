@@ -36,16 +36,17 @@ PROC_STATE = 'proc_state_'
 # things a process can do
 DO_COMPUTE = 'cpu'
 DO_IO = 'io'
-DO_IO_DONE = 'io_done'
+DO_PROGRAMMED_IO = 'p_io'
 
 
 class scheduler:
-    def __init__(self, process_switch_behavior, io_done_behavior, io_length):
+    def __init__(self, process_switch_behavior, io_done_behavior, io_length, interrupt_overhead):
         # keep set of instructions for each of the processes
         self.proc_info = {}
         self.process_switch_behavior = process_switch_behavior
         self.io_done_behavior = io_done_behavior
         self.io_length = io_length
+        self.interrupt_overhead = interrupt_overhead
         return
 
     def new_process(self):
@@ -56,6 +57,26 @@ class scheduler:
         self.proc_info[proc_id][PROC_CODE] = []
         self.proc_info[proc_id][PROC_STATE] = STATE_READY
         return proc_id
+
+    # is this dead code? why is it here? no one knows...
+    def load_file(self, progfile):
+        fd = open(progfile)
+        proc_id = self.new_process()
+        
+        for line in fd:
+            tmp = line.split()
+            if len(tmp) == 0:
+                continue
+            opcode = tmp[0]
+            if opcode == 'compute':
+                assert(len(tmp) == 2)
+                for i in range(int(tmp[1])):
+                    self.proc_info[proc_id][PROC_CODE].append(DO_COMPUTE)
+            elif opcode == 'io':
+                assert(len(tmp) == 1)
+                self.proc_info[proc_id][PROC_CODE].append(DO_IO)
+        fd.close()
+        return
 
     # program looks like this:
     #   c7,i,c1,i
@@ -71,8 +92,9 @@ class scheduler:
                     self.proc_info[proc_id][PROC_CODE].append(DO_COMPUTE)
             elif opcode == 'i':
                 self.proc_info[proc_id][PROC_CODE].append(DO_IO)
-                # add one compute to HANDLE the I/O completion
-                self.proc_info[proc_id][PROC_CODE].append(DO_IO_DONE)
+            elif opcode == 'p':
+                for i in range(self.io_length):
+                    self.proc_info[proc_id][PROC_CODE].append(DO_PROGRAMMED_IO)
             else:
                 print('bad opcode %s (should be c or i)' % opcode)
                 exit(1)
@@ -93,8 +115,6 @@ class scheduler:
                 self.proc_info[proc_id][PROC_CODE].append(DO_COMPUTE)
             else:
                 self.proc_info[proc_id][PROC_CODE].append(DO_IO)
-                # add one compute to HANDLE the I/O completion
-                self.proc_info[proc_id][PROC_CODE].append(DO_IO_DONE)
         return
 
     def move_to_ready(self, expected, pid=-1):
@@ -182,6 +202,9 @@ class scheduler:
                 self.next_proc()
         return
 
+    #
+    # all the work is done here, one tick at a time
+    #
     def run(self):
         clock_tick = 0
 
@@ -200,9 +223,9 @@ class scheduler:
         # OUTPUT: headers for each column
         print('%s' % 'Time', end='') 
         for pid in range(len(self.proc_info)):
-            print('%14s' % ('PID:%2d' % (pid)), end='')
-        print('%14s' % 'CPU', end='')
-        print('%14s' % 'IOs', end='')
+            print('%10s' % ('PID:%2d' % (pid)), end='')
+        print('%10s' % 'CPU', end='')
+        print('%10s' % 'IOs', end='')
         print('')
 
         # init statistics
@@ -248,30 +271,26 @@ class scheduler:
                 print('%3d ' % clock_tick, end='')
             for pid in range(len(self.proc_info)):
                 if pid == self.curr_proc and instruction_to_execute != '':
-                    print('%14s' % ('RUN:'+instruction_to_execute), end='')
+                    print('%10s' % ('RUN:'+instruction_to_execute), end='')
                 else:
-                    print('%14s' % (self.proc_info[pid][PROC_STATE]), end='')
-
-            # CPU output here: if no instruction executes, output a space, otherwise a 1 
+                    print('%10s' % (self.proc_info[pid][PROC_STATE]), end='')
             if instruction_to_execute == '':
-                print('%14s' % ' ', end='')
+                print('%10s' % ' ', end='')
             else:
-                print('%14s' % '1', end='')
-
-            # IO output here:
+                print('%10s' % 1, end='')
             num_outstanding = self.get_ios_in_flight(clock_tick)
             if num_outstanding > 0:
-                print('%14s' % str(num_outstanding), end='')
+                print('%10s' % str(num_outstanding), end='')
                 io_busy += 1
             else:
                 print('%10s' % ' ', end='')
             print('')
 
-            # if this is an IO start instruction, switch to waiting state
+            # if this is an IO instruction, switch to waiting state
             # and add an io completion in the future
             if instruction_to_execute == DO_IO:
                 self.move_to_wait(STATE_RUNNING)
-                self.io_finish_times[self.curr_proc].append(clock_tick + self.io_length + 1)
+                self.io_finish_times[self.curr_proc].append(clock_tick + self.io_length)
                 if self.process_switch_behavior == SCHED_SWITCH_ON_IO:
                     self.next_proc()
 
@@ -288,6 +307,7 @@ parser.add_option('-s', '--seed', default=0, help='the random seed', action='sto
 parser.add_option('-P', '--program', default='', help='more specific controls over programs', action='store', type='string', dest='program')
 parser.add_option('-l', '--processlist', default='', help='a comma-separated list of processes to run, in the form X1:Y1,X2:Y2,... where X is the number of instructions that process should run, and Y the chances (from 0 to 100) that an instruction will use the CPU or issue an IO', action='store', type='string', dest='process_list')
 parser.add_option('-L', '--iolength', default=5, help='how long an IO takes', action='store', type='int', dest='io_length')
+parser.add_option('-o', '--interrupt_overhead', default=5, help='how long an interrupt processing takes', action='store', type='int', dest='interrupt_overhead')
 parser.add_option('-S', '--switch', default='SWITCH_ON_IO', help='when to switch between processes: SWITCH_ON_IO, SWITCH_ON_END', action='store', type='string', dest='process_switch_behavior')
 parser.add_option('-I', '--iodone', default='IO_RUN_LATER', help='type of behavior when IO ends: IO_RUN_LATER, IO_RUN_IMMEDIATE', action='store', type='string', dest='io_done_behavior')
 parser.add_option('-c', help='compute answers for me', action='store_true', default=False, dest='solve')
@@ -299,7 +319,7 @@ random_seed(options.seed)
 assert(options.process_switch_behavior == SCHED_SWITCH_ON_IO or options.process_switch_behavior == SCHED_SWITCH_ON_END)
 assert(options.io_done_behavior == IO_RUN_IMMEDIATE or options.io_done_behavior == IO_RUN_LATER)
 
-s = scheduler(options.process_switch_behavior, options.io_done_behavior, options.io_length)
+s = scheduler(options.process_switch_behavior, options.io_done_behavior, options.io_length, options.interrupt_overhead)
 
 if options.program != '':
     for p in options.program.split(':'):
@@ -309,8 +329,6 @@ else:
     for p in options.process_list.split(','):
         s.load(p)
 
-assert(options.io_length >= 0)
-
 if options.solve == False:
     print('Produce a trace of what would happen when you run these processes:')
     for pid in range(s.get_num_processes()):
@@ -319,12 +337,12 @@ if options.solve == False:
             print('  %s' % s.get_instruction(pid, inst))
         print('')
     print('Important behaviors:')
-    print('  System will switch when ', end='')
+    print('  System will switch when', end='')
     if options.process_switch_behavior == SCHED_SWITCH_ON_IO:
         print('the current process is FINISHED or ISSUES AN IO')
     else:
         print('the current process is FINISHED')
-    print('  After IOs, the process issuing the IO will ', end='')
+    print('  After IOs, the process issuing the IO will', end='')
     if options.io_done_behavior == IO_RUN_IMMEDIATE:
         print('run IMMEDIATELY')
     else:

@@ -154,16 +154,19 @@ finished, it moves to the DONE state, while 1 runs. When 1 finishes, the trace
 is done.
 
 Let's look at one more example before getting to some questions. In this
-example, the process just issues I/O requests. We specify here tht I/Os take 5
+example, the process just issues I/O requests. We specify here that I/Os take 5
 time units to complete with the flag -L.
 
 ```sh
 prompt> ./process-run.py -l 3:0 -L 5
 Produce a trace of what would happen when you run these processes:
 Process 0
-  io-start
-  io-start
-  io-start
+  io
+  io_done
+  io
+  io_done
+  io
+  io_done
 
 Important behaviors:
   System will switch when the current process is FINISHED or ISSUES AN IO
@@ -174,42 +177,51 @@ What do you think the execution trace will look like? Let's find out:
 
 ```sh
 prompt> ./process-run.py -l 3:0 -L 5 -c
-Time     PID: 0        CPU        IOs
-  1  RUN:io-start          1
-  2     WAITING                     1
-  3     WAITING                     1
-  4     WAITING                     1
-  5     WAITING                     1
-  6* RUN:io-start          1
-  7     WAITING                     1
-  8     WAITING                     1
-  9     WAITING                     1
- 10     WAITING                     1
- 11* RUN:io-start          1
- 12     WAITING                     1
- 13     WAITING                     1
- 14     WAITING                     1
- 15     WAITING                     1
- 16*       DONE
+Time    PID: 0       CPU       IOs
+  1         RUN:io             1
+  2        WAITING                           1
+  3        WAITING                           1
+  4        WAITING                           1
+  5        WAITING                           1
+  6        WAITING                           1
+  7*   RUN:io_done             1
+  8         RUN:io             1
+  9        WAITING                           1
+ 10        WAITING                           1
+ 11        WAITING                           1
+ 12        WAITING                           1
+ 13        WAITING                           1
+ 14*   RUN:io_done             1
+ 15         RUN:io             1
+ 16        WAITING                           1
+ 17        WAITING                           1
+ 18        WAITING                           1
+ 19        WAITING                           1
+ 20        WAITING                           1
+ 21*   RUN:io_done             1
 ```
 
 As you can see, the program just issues three I/Os. When each I/O is issued,
 the process moves to a WAITING state, and while the device is busy servicing
-the I/O, the CPU is idle. 
+the I/O, the CPU is idle.
+
+To handle the completion of the I/O, one more CPU action takes place. Note
+that a single instruction to handle I/O initiation and completion is not
+particularly realistic, but just used here for simplicity.
 
 Let's print some stats (run the same command as above, but with the -p flag)
 to see some overall behaviors: 
 
 ```sh
-Stats: Total Time 16
-Stats: CPU Busy 3 (18.75%)
-Stats: IO Busy  12 (75.00%)
+Stats: Total Time 21
+Stats: CPU Busy 6 (28.57%)
+Stats: IO Busy  15 (71.43%)
 ```
 
-As you can see, the trace took 16 clock ticks to run, but the CPU was only
-busy less than 20% of the time. The IO device, on the other hand, was quite
-busy. In general, we'd like to keep all the devices busy, as that is a better
-use of resources.
+As you can see, the trace took 21 clock ticks to run, but the CPU was
+busy less than 30% of the time. The I/O device, on the other hand, was
+quite busy. In general, we'd like to keep all the devices busy, as
+that is a better use of resources.
 
 There are a few other important flags:
 ```sh
@@ -233,7 +245,7 @@ There are a few other important flags:
       (e.g., depending on process-switching behavior)
 ```
 
-Now go answer the questions at the back of the chapter to learn more.
+Now go answer the questions at the back of the chapter to learn more, please.
 
 
 
