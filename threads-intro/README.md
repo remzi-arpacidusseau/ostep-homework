@@ -166,7 +166,7 @@ flag sets the `%dx` register to the value 3 to start with.
 
 As you can see from the trace, the `sub` instruction slowly lowers the value
 of %dx. The first few times `test` is called, only the ">=", ">", and "!="
-conditions get set. However, the last `test` in the trace finds %dx and 0 to
+conditions get set. However, the last `test` in the trace finds %dx and -1 to
 be equal, and thus the subsequent jump does NOT take place, and the program
 finally halts.
 
@@ -193,11 +193,11 @@ The code has a critical section which loads the value of a variable
 (at address 2000), then adds 1 to the value, then stores it back. 
 
 The code after just decrements a loop counter (in %bx), tests if it
-is greater than or equal to zero, and if so, jumps back to the top
+is greater than zero, and if so, jumps back to the top
 to the critical section again.
 
 ```sh
-prompt> ./x86.py -p looping-race-nolock.s -t 2 -a bx=1 -M 2000 -c
+prompt> ./x86.py -p looping-race-nolock.s -t 2 -a bx=1 -R bx -M 2000 -c
 
  2000      bx          Thread 0                Thread 1
     0       1
