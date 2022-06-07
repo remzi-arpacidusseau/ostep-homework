@@ -177,28 +177,28 @@ What do you think the execution trace will look like? Let's find out:
 
 ```sh
 prompt> ./process-run.py -l 3:0 -L 5 -c
-Time    PID: 0       CPU       IOs
-  1         RUN:io             1
-  2        WAITING                           1
-  3        WAITING                           1
-  4        WAITING                           1
-  5        WAITING                           1
-  6        WAITING                           1
-  7*   RUN:io_done             1
-  8         RUN:io             1
-  9        WAITING                           1
- 10        WAITING                           1
- 11        WAITING                           1
- 12        WAITING                           1
- 13        WAITING                           1
- 14*   RUN:io_done             1
- 15         RUN:io             1
- 16        WAITING                           1
- 17        WAITING                           1
- 18        WAITING                           1
- 19        WAITING                           1
- 20        WAITING                           1
- 21*   RUN:io_done             1
+Time    PID: 0         CPU      IOs
+  1         RUN:io      1
+  2        WAITING               1
+  3        WAITING               1
+  4        WAITING               1
+  5        WAITING               1
+  6        WAITING               1
+  7*   RUN:io_done      1
+  8         RUN:io      1
+  9        WAITING               1
+ 10        WAITING               1
+ 11        WAITING               1
+ 12        WAITING               1
+ 13        WAITING               1
+ 14*   RUN:io_done      1
+ 15         RUN:io      1
+ 16        WAITING               1
+ 17        WAITING               1
+ 18        WAITING               1
+ 19        WAITING               1
+ 20        WAITING               1
+ 21*   RUN:io_done      1
 ```
 
 As you can see, the program just issues three I/Os. When each I/O is issued,
