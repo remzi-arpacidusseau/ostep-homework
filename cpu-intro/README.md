@@ -9,7 +9,7 @@ processes can be in a few different states:
 RUNNING - the process is using the CPU right now
 READY   - the process could be using the CPU right now
           but (alas) some other process is
-WAITING - the process is waiting on I/O
+BLOCKED - the process is waiting on I/O
           (e.g., it issued a request to a disk)
 DONE    - the process is finished executing
 ```
@@ -179,30 +179,30 @@ What do you think the execution trace will look like? Let's find out:
 prompt> ./process-run.py -l 3:0 -L 5 -c
 Time    PID: 0       CPU       IOs
   1         RUN:io             1
-  2        WAITING                           1
-  3        WAITING                           1
-  4        WAITING                           1
-  5        WAITING                           1
-  6        WAITING                           1
+  2        BLOCKED                           1
+  3        BLOCKED                           1
+  4        BLOCKED                           1
+  5        BLOCKED                           1
+  6        BLOCKED                           1
   7*   RUN:io_done             1
   8         RUN:io             1
-  9        WAITING                           1
- 10        WAITING                           1
- 11        WAITING                           1
- 12        WAITING                           1
- 13        WAITING                           1
+  9        BLOCKED                           1
+ 10        BLOCKED                           1
+ 11        BLOCKED                           1
+ 12        BLOCKED                           1
+ 13        BLOCKED                           1
  14*   RUN:io_done             1
  15         RUN:io             1
- 16        WAITING                           1
- 17        WAITING                           1
- 18        WAITING                           1
- 19        WAITING                           1
- 20        WAITING                           1
+ 16        BLOCKED                           1
+ 17        BLOCKED                           1
+ 18        BLOCKED                           1
+ 19        BLOCKED                           1
+ 20        BLOCKED                           1
  21*   RUN:io_done             1
 ```
 
 As you can see, the program just issues three I/Os. When each I/O is issued,
-the process moves to a WAITING state, and while the device is busy servicing
+the process moves to a BLOCKED state, and while the device is busy servicing
 the I/O, the CPU is idle.
 
 To handle the completion of the I/O, one more CPU action takes place. Note
