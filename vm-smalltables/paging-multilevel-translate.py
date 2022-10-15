@@ -251,10 +251,10 @@ for i in range(0, options.num):
     else:
         vaddr = (used[i] << 5) | int(random.random() * 32)
     if options.solve == True:
-        print('Virtual Address %04x:' % vaddr)
+        print('Virtual Address 0x%04x:' % vaddr)
         r = os.translate(1, vaddr)
         if r > -1:
-            print('      --> Translates to Physical Address 0x%03x --> Value: %02x' % (r, os.getValue(r)))
+            print('      --> Translates to Physical Address 0x%03x --> Value: 0x%02x' % (r, os.getValue(r)))
         elif r == -1:
             print('      --> Fault (page directory entry not valid)')
         else:
