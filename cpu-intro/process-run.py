@@ -25,7 +25,7 @@ IO_RUN_IMMEDIATE = 'IO_RUN_IMMEDIATE'
 STATE_RUNNING = 'RUNNING'
 STATE_READY = 'READY'
 STATE_DONE = 'DONE'
-STATE_WAIT = 'WAITING'
+STATE_WAIT = 'BLOCKED'
 
 # members of process structure
 PROC_CODE = 'code_'
@@ -286,7 +286,7 @@ class scheduler:
 parser = OptionParser()
 parser.add_option('-s', '--seed', default=0, help='the random seed', action='store', type='int', dest='seed')
 parser.add_option('-P', '--program', default='', help='more specific controls over programs', action='store', type='string', dest='program')
-parser.add_option('-l', '--processlist', default='', help='a comma-separated list of processes to run, in the form X1:Y1,X2:Y2,... where X is the number of instructions that process should run, and Y the chances (from 0 to 100) that an instruction will use the CPU or issue an IO', action='store', type='string', dest='process_list')
+parser.add_option('-l', '--processlist', default='', help='a comma-separated list of processes to run, in the form X1:Y1,X2:Y2,... where X is the number of instructions that process should run, and Y the chances (from 0 to 100) that an instruction will use the CPU or issue an IO (i.e., if Y is 100, a process will ONLY use the CPU and issue no I/Os; if Y is 0, a process will only issue I/Os)', action='store', type='string', dest='process_list')
 parser.add_option('-L', '--iolength', default=5, help='how long an IO takes', action='store', type='int', dest='io_length')
 parser.add_option('-S', '--switch', default='SWITCH_ON_IO', help='when to switch between processes: SWITCH_ON_IO, SWITCH_ON_END', action='store', type='string', dest='process_switch_behavior')
 parser.add_option('-I', '--iodone', default='IO_RUN_LATER', help='type of behavior when IO ends: IO_RUN_LATER, IO_RUN_IMMEDIATE', action='store', type='string', dest='io_done_behavior')
