@@ -401,14 +401,14 @@ class ssd:
             for i in range(self.num_pages):
                 out_str = str(i).zfill(max_len)[max_len - n]
                 print(out_str, end='')
-                if i > 0 and (i+1) % 10 == 0:
+                if i > 0 and (i+1) % self.pages_per_block == 0:
                     print(end=' ')
             print('')
 
         print('State ', end='')
         for i in range(self.num_pages):
             print('%s' % self.printable_state(self.state[i]), end='')
-            if i > 0 and (i+1) % 10 == 0:
+            if i > 0 and (i+1) % self.pages_per_block == 0:
                 print(end=' ')
         print('')
 
@@ -419,7 +419,7 @@ class ssd:
                 print('%s' % self.data[i], end='')
             else:
                 print(' ', end='')
-            if i > 0 and (i+1) % 10 == 0:
+            if i > 0 and (i+1) % self.pages_per_block == 0:
                 print(end=' ')
         print('')
 
@@ -430,7 +430,7 @@ class ssd:
                 print('+', end='')
             else:
                 print(' ', end='')
-            if i > 0 and (i+1) % 10 == 0:
+            if i > 0 and (i+1) % self.pages_per_block == 0:
                 print(end=' ')
         print('')
         return
