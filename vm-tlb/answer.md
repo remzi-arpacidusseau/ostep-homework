@@ -1,24 +1,33 @@
-Q1: use gettimeofday
--> use clock_gettime instead, reason ...
+# My Solutions
 
-Q2: write tlb.c
--> how to get page size, for mac : getconf PAGESIZE
+## Results
 
-Q3: reliable result?
--> depends on granuality of used time function.
--> clock_gettime resolution on my computer is 1 microseconds (10E-6)
--> per page access is around few nanoseconds in small number of pages case
--> so it is better to run trials 10E3 times to get a reliable result
+![Figure](fig.png)
 
-Q4: Why visualization makes data easier to digest?
--> we could observe trend from the graph
+### Q1: Use gettimeofday
 
-Q5: Compiler optimization
--> using -O0 (by default) for optimization already omits optimizations such as loop unrolling and register allocation but depends on compilers and vendors.
--> to be absolutely certain about this, use volatie
+A more suitable option would be `clock_gettime`, because it has better resolution.
 
-Q6: Pinning thread
--> not sure if we could ensure this on mac
+### Q2: Write tlb.c
 
-Q7: Balance potential costs of initialization and zero demanding (memory management technique where a page of memory is not allocated and zeroed out until a process actually needs to use it.) if we do not initialize
--> initialize one element per page
+To get the page size on a Mac, use the command: `getconf PAGESIZE`.
+
+### Q3: Reliable result?
+
+The reliability of the result depends on the granularity of the time function used. On my computer, `clock_gettime` resolution is 1 microsecond (10E-6). Given that per page access is around a few nanoseconds in the case of a small number of pages, it would be better to run trials 10E3 times to get a reliable result.
+
+### Q4: Why does visualization make data easier to digest?
+
+Visualization allows us to observe trends in the data more clearly and quickly.
+
+### Q5: Compiler optimization
+
+By default, `-O0` omits optimizations such as loop unrolling and register allocation, but this can depend on compilers and vendors. To be absolutely certain about this, use `volatile`.
+
+### Q6: Pinning thread
+
+Currently, I'm not sure if we can ensure this on a Mac.
+
+### Q7: Balancing potential costs of initialization and zero-demanding
+
+Zero-demanding is a memory management technique where a page of memory is not allocated and zeroed out until a process actually needs to use it. If we do not initialize, then it would be best to initialize one element per page.
