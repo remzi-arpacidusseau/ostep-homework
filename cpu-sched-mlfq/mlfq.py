@@ -43,7 +43,7 @@ parser.add_option('-n', '--numQueues',
 parser.add_option('-q', '--quantum', help='length of time slice (if not using -Q)',
                   default=10, action='store', type='int', dest='quantum')
 parser.add_option('-a', '--allotment', help='length of allotment (if not using -A)',
-                  default=1, action='store', type='int', dest='allotment')
+                  default=10, action='store', type='int', dest='allotment')
 parser.add_option('-Q', '--quantumList',
                   help='length of time slice per queue level, specified as ' + \
                   'x,y,z,... where x is the quantum length for the highest ' + \
