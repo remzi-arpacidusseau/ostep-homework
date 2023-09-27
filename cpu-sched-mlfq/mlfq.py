@@ -43,7 +43,7 @@ parser.add_option('-n', '--numQueues',
 parser.add_option('-q', '--quantum', help='length of time slice (if not using -Q)',
                   default=10, action='store', type='int', dest='quantum')
 parser.add_option('-a', '--allotment', help='length of allotment (if not using -A)',
-                  default=10, action='store', type='int', dest='allotment')
+                  default=1, action='store', type='int', dest='allotment')
 parser.add_option('-Q', '--quantumList',
                   help='length of time slice per queue level, specified as ' + \
                   'x,y,z,... where x is the quantum length for the highest ' + \
@@ -246,7 +246,9 @@ while finishedJobs < totalJobs:
                 if job[j]['timeLeft'] > 0:
                     # print('-> FinalBoost %d (timeLeft %d)' % (j, job[j]['timeLeft']))
                     job[j]['currPri']   = hiQueue
-                    job[j]['ticksLeft'] = allotment[hiQueue]
+                    job[j]['ticksLeft'] = quantum[hiQueue]
+                    job[j]['allotLeft'] = allotment[hiQueue]
+                    # print('  BOOST', j, ' ticks:', job[j]['ticksLeft'], ' allot:', job[j]['allotLeft'])
             # print('BOOST END: QUEUES look like:', queue)
 
     # check for any I/Os done
