@@ -316,7 +316,7 @@ while finishedJobs < totalJobs:
         desched = queue[currQueue].pop(0)
         assert(desched == currJob)
         job[currJob]['doingIO'] = True
-        # this does the bad rule -- reset your tick counter if you stay at the same level
+        # this does the bad rule -- reset your time at this level if you do I/O
         if options.stay == True:
             job[currJob]['ticksLeft'] = quantum[currQueue]
             job[currJob]['allotLeft'] = allotment[currQueue]
