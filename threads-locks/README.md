@@ -125,7 +125,7 @@ now. Here is a code snippet of a loop:
 .top
 sub  $1,%dx
 test $0,%dx     
-jgte .top         
+jgt .top         
 halt
 ```sh
 
