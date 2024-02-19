@@ -35,10 +35,6 @@ parser.add_option('-c', '--compute', help='compute answers for me', action='stor
 
 print('')
 print('OPTIONS seed', options.seed)
-print('OPTIONS data_size', options.data_size)
-print('OPTIONS data', options.data)
-print('')
-
 random_seed(options.seed)
 
 values = []
@@ -46,9 +42,14 @@ if options.data != '':
     tmp = options.data.split(',')
     for t in tmp:
         values.append(int(t))
+    options.data_size=len(values)
 else:
     for t in range(int(options.data_size)):
         values.append(int(random.random() * 256))
+
+print('OPTIONS data_size', options.data_size)
+print('OPTIONS data', options.data)
+print('')
 
 
 add = 0
@@ -61,20 +62,18 @@ for value in values:
     fletcher_a = (fletcher_a + value) % 255
     fletcher_b = (fletcher_b + fletcher_a) % 255
 
-print('Decimal:  ', end=' ')
+# --------------------------------------------
+
+print('  Decimal:    ', end=' ')
+print('Hex:    ', end=' ')
+print('Bin:    ', end='\n')
 for word in values:
     print('%10s' % str(word), end=' ')
+    print('   ', print_hex(word), end=' ')
+    print('   ', print_bin(word), end='\n')
 print('')
 
-print('Hex:      ', end=' ')
-for word in values:
-    print('     ', print_hex(word), end=' ')
-print('')
-
-print('Bin:      ', end=' ')
-for word in values:
-    print(print_bin(word), end=' ')
-print('')
+# --------------------------------------------
 
 print('')
 if options.solve:
