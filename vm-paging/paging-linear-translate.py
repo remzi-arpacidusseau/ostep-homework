@@ -12,7 +12,7 @@ def mustbepowerof2(bits, size, msg):
         sys.exit(1)
 
 def mustbemultipleof(bignum, num, msg):
-    if (int(float(bignum)/float(num)) != (int(bignum) / int(num))):
+    if (num == 0 or int(float(bignum)/float(num)) != (int(bignum) / int(num))):
         print('Error in argument: %s' % msg)
         sys.exit(1)
 
