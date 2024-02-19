@@ -153,7 +153,7 @@ prompt>
 
 The -S flag here is passed "111000" which means "run client 1, then client 1,
 then 1 again, then 0, 0, 0, and then repeat (if need be)". The result in this
-case is client 1 reading file a before client 1 writes it.
+case is client 1 reading file a before client 0 writes it.
 
 The `-A` flag gives exact control over which actions the clients take. Here is
 an example:
