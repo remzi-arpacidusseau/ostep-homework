@@ -313,10 +313,16 @@ class Disk:
             self.blockInfoList.append((track, angle + (angleOffset * skew), block))
         self.tracksBeginEnd[track] = (pblock, block)
         self.maxBlock              = pblock
+        
         # print 'MAX BLOCK:', self.maxBlock
 
         # adjust angle to starting position relative 
+        self.maxBlockToAngleMap = max(self.blockToAngleMap)
         for i in self.blockToAngleMap:
+            for block in self.addr.split(","):
+                if int(block) > self.maxBlockToAngleMap:
+                    print("Error: The requested block address %s is greater than the maximum block %d available"%(block,self.maxBlockToAngleMap))
+                    sys.exit(1)
             self.blockToAngleMap[i] = (self.blockToAngleMap[i] + 180) % 360
 
         # print 'btoa map', self.blockToAngleMap
@@ -338,7 +344,7 @@ class Disk:
             for i in range(numRequests):
                 tmpList.append(int(random.random() * maxRequest) + minRequest)
             return tmpList
-        else:
+        else:   
             return addr.split(',')
 
     #
