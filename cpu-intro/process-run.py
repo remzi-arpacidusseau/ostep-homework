@@ -84,7 +84,7 @@ class scheduler:
         if len(tmp) != 2:
             print('Bad description (%s): Must be number <x:y>' % program_description)
             print('  where X is the number of instructions')
-            print('  and Y is the percent change that an instruction is CPU not IO')
+            print('  and Y is the percent chance that an instruction is CPU not IO')
             exit(1)
 
         num_instructions, chance_cpu = int(tmp[0]), float(tmp[1])/100.0
