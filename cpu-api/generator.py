@@ -444,7 +444,7 @@ class Parser:
     def parse(self):
         # remove spaces around commas
         program = self.program
-        p = re.compile('\s*,\s*')
+        p = re.compile(r'\s*,\s*', re.VERBOSE)
         m = p.search(program)
         while m:
             program = program.replace(m.group(), ',', 1)

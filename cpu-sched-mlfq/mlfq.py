@@ -246,7 +246,9 @@ while finishedJobs < totalJobs:
                 if job[j]['timeLeft'] > 0:
                     # print('-> FinalBoost %d (timeLeft %d)' % (j, job[j]['timeLeft']))
                     job[j]['currPri']   = hiQueue
-                    job[j]['ticksLeft'] = allotment[hiQueue]
+                    job[j]['ticksLeft'] = quantum[hiQueue]
+                    job[j]['allotLeft'] = allotment[hiQueue]
+                    # print('  BOOST', j, ' ticks:', job[j]['ticksLeft'], ' allot:', job[j]['allotLeft'])
             # print('BOOST END: QUEUES look like:', queue)
 
     # check for any I/Os done
@@ -314,7 +316,7 @@ while finishedJobs < totalJobs:
         desched = queue[currQueue].pop(0)
         assert(desched == currJob)
         job[currJob]['doingIO'] = True
-        # this does the bad rule -- reset your tick counter if you stay at the same level
+        # this does the bad rule -- reset your time at this level if you do I/O
         if options.stay == True:
             job[currJob]['ticksLeft'] = quantum[currQueue]
             job[currJob]['allotLeft'] = allotment[currQueue]

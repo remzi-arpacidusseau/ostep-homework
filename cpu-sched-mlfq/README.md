@@ -13,6 +13,7 @@ Use the help flag (-h) to see the options:
 
 ```sh
 Usage: mlfq.py [options]
+
 Options:
   -h, --help            show this help message and exit
   -s SEED, --seed=SEED  the random seed
@@ -20,29 +21,36 @@ Options:
                         number of queues in MLFQ (if not using -Q)
   -q QUANTUM, --quantum=QUANTUM
                         length of time slice (if not using -Q)
+  -a ALLOTMENT, --allotment=ALLOTMENT
+                        length of allotment (if not using -A)
   -Q QUANTUMLIST, --quantumList=QUANTUMLIST
-                        length of time slice per queue level, 
-                        specified as x,y,z,... where x is the 
-                        quantum length for the highest-priority 
-                        queue, y the next highest, and so forth
+                        length of time slice per queue level, specified as
+                        x,y,z,... where x is the quantum length for the
+                        highest priority queue, y the next highest, and so
+                        forth
+  -A ALLOTMENTLIST, --allotmentList=ALLOTMENTLIST
+                        length of time allotment per queue level, specified as
+                        x,y,z,... where x is the # of time slices for the
+                        highest priority queue, y the next highest, and so
+                        forth
   -j NUMJOBS, --numJobs=NUMJOBS
                         number of jobs in the system
   -m MAXLEN, --maxlen=MAXLEN
-                        max run-time of a job (if random)
+                        max run-time of a job (if randomly generating)
   -M MAXIO, --maxio=MAXIO
-                        max I/O frequency of a job (if random)
+                        max I/O frequency of a job (if randomly generating)
   -B BOOST, --boost=BOOST
-                        how often to boost the priority of all 
-                        jobs back to high priority (0 means never)
+                        how often to boost the priority of all jobs back to
+                        high priority
   -i IOTIME, --iotime=IOTIME
                         how long an I/O should last (fixed constant)
-  -S, --stay            reset and stay at same priority level 
-                        when issuing I/O
+  -S, --stay            reset and stay at same priority level when issuing I/O
+  -I, --iobump          if specified, jobs that finished I/O move immediately
+                        to front of current queue
   -l JLIST, --jlist=JLIST
-                        a comma-separated list of jobs to run, 
-                        in the form x1,y1,z1:x2,y2,z2:... where 
-                        x is start time, y is run time, and z 
-                        is how often the job issues an I/O request
+                        a comma-separated list of jobs to run, in the form
+                        x1,y1,z1:x2,y2,z2:... where x is start time, y is run
+                        time, and z is how often the job issues an I/O request
   -c                    compute answers for me
 ```
 
@@ -61,12 +69,17 @@ What you would then see is the specific problem definition:
 Here is the list of inputs:
 OPTIONS jobs 3
 OPTIONS queues 3
+OPTIONS allotments for queue  2 is   1
 OPTIONS quantum length for queue  2 is  10
+OPTIONS allotments for queue  1 is   1
 OPTIONS quantum length for queue  1 is  10
+OPTIONS allotments for queue  0 is   1
 OPTIONS quantum length for queue  0 is  10
 OPTIONS boost 0
-OPTIONS ioTime 0
+OPTIONS ioTime 5
 OPTIONS stayAfterIO False
+OPTIONS iobump False
+
 
 For each job, three defining characteristics are given:
   startTime : at what time does the job enter the system
@@ -76,7 +89,7 @@ For each job, three defining characteristics are given:
 
 Job List:
   Job  0: startTime   0 - runTime  84 - ioFreq   7
-  Job  1: startTime   0 - runTime  42 - ioFreq   2
+  Job  1: startTime   0 - runTime  42 - ioFreq   3
   Job  2: startTime   0 - runTime  51 - ioFreq   4
 
 Compute the execution trace for the given workloads.
@@ -141,7 +154,11 @@ low-priority queue a 30-ms time slice.
 You can separately control how much time allotment there is per queue
 too. This can be set for all queues with -a, or per queue with -A, e.g., -A
 20,40,60 sets the time allotment per queue to 20ms, 40ms, and 60ms,
-respectively. 
+respectively. Note that while the chapter talks about allotments in
+terms of time, here it is done in terms of number of time slices,
+i.e., if the time slice length for a given queue is 10 ms, and the
+allotment is 2, the job can run for 2 time slices (20 ms) at that
+queue level before moving down in priority.
 
 If you are randomly generating jobs, you can also control how long they might
 run for (-m), or how often they generate I/O (-M). If you, however, want more
@@ -173,10 +190,10 @@ milliseconds, when invoked as such:
 The scheduler uses this feature to avoid starvation as discussed in the
 chapter. However, it is off by default.
 
-The -S flag invokes older Rules 4a and 4b, which means that if a job issues an
-I/O before completing its time slice, it will return to that same priority
-queue when it resumes execution, with its full time-slice intact.  This
-enables gaming of the scheduler.
+The -S flag invokes older Rules 4a and 4b, which means that if a job
+issues an I/O before completing its time slice, it will return to that
+same priority queue when it resumes execution, with its full allotment
+intact.  This enables gaming of the scheduler.
 
 Finally, you can easily change how long an I/O lasts by using the -i flag. By
 default in this simplistic model, each I/O takes a fixed amount of time of 5
