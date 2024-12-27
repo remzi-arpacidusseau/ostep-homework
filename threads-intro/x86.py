@@ -6,19 +6,22 @@ import time
 import random
 from optparse import OptionParser
 
-# to make Python2 and Python3 act the same -- how dumb
 def random_seed(seed):
     try:
+        # Introduced in Python 3.2 to match legacy versions
+        #   https://docs.python.org/3.2/library/random.html#random.seed
         random.seed(seed, version=1)
     except:
-        random.seed(seed)
+        random.seed(seed)  # before Python 3.2 (including Python 2)
     return
 
 def time_clock():
     try:
-        rc = time_clock()
-    except:
+        # Introduced in Python 3.3
+        #   https://docs.python.org/3/library/time.html#time.process_time
         rc = time.process_time()
+    except:
+        rc = time.clock()  # before Python 3.3 (including Python 2)
     return rc
 
 #
