@@ -120,14 +120,14 @@ now also incremented.
 There are a few more instructions you'll need to know, so let's get to them
 now. Here is a code snippet of a loop:
 
-```
+```sh
 .main
 .top
 sub  $1,%dx
 test $0,%dx     
 jgt .top         
 halt
-```sh
+```
 
 A few things have been introduced here. First is the `test` instruction.
 This instruction takes two arguments and compares them; it then sets implicit
