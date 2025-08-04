@@ -14,6 +14,10 @@
 
 typedef struct __barrier_t {
     // add semaphores and other information here
+	sem_t s;
+	sem_t guard;
+	int count;
+	int num;
 } barrier_t;
 
 
@@ -22,10 +26,25 @@ barrier_t b;
 
 void barrier_init(barrier_t *b, int num_threads) {
     // initialization code goes here
+	sem_init(&b->s, 0, 0);
+	sem_init(&b->guard, 0, 1);
+	b->count = 0;
+	b->num = num_threads;
 }
 
 void barrier(barrier_t *b) {
-    // barrier code goes here
+    sem_wait(&b->guard);
+    b->count++;
+    int is_last = (b->count == b->num);
+    sem_post(&b->guard);
+
+    if (is_last) {
+        for (int i = 0; i < b->num; i++) {
+            sem_post(&b->s);
+        }
+    }
+
+    sem_wait(&b->s); // 마지막 스레드도 여기서 대기했다가 함께 깨어남
 }
 
 //
@@ -59,12 +78,12 @@ int main(int argc, char *argv[]) {
     
     int i;
     for (i = 0; i < num_threads; i++) {
-	t[i].thread_id = i;
-	Pthread_create(&p[i], NULL, child, &t[i]);
+		t[i].thread_id = i;
+		Pthread_create(&p[i], NULL, child, &t[i]);
     }
 
     for (i = 0; i < num_threads; i++) 
-	Pthread_join(p[i], NULL);
+		Pthread_join(p[i], NULL);
 
     printf("parent: end\n");
     return 0;
