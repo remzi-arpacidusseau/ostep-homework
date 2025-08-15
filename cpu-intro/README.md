@@ -2,7 +2,7 @@
 # Overview
 
 This program, called process-run.py, allows you to see how the state of a
-process state changes as it runs on a CPU. As described in the chapter, 
+process state changes as it runs on a CPU. As described in the chapter,
 processes can be in a few different states:
 
 ```sh
@@ -59,8 +59,8 @@ Options:
 The most important option to understand is the PROCESS_LIST (as specified by
 the -l or --processlist flags) which specifies exactly what each running
 program (or 'process') will do. A process consists of instructions, and each
-instruction can just do one of two things: 
-- use the CPU 
+instruction can just do one of two things:
+- use the CPU
 - issue an IO (and wait for it to complete)
 
 When a process uses the CPU (and does no IO at all), it should simply
@@ -69,7 +69,7 @@ is a simple run that just has one program being run, and that program only
 uses the CPU (it does no IO).
 
 ```sh
-prompt> ./process-run.py -l 5:100 
+prompt> ./process-run.py -l 5:100
 Produce a trace of what would happen when you run these processes:
 Process 0
   cpu
@@ -82,12 +82,12 @@ Important behaviors:
   System will switch when the current process is FINISHED or ISSUES AN IO
   After IOs, the process issuing the IO will run LATER (when it is its turn)
 
-prompt> 
+prompt>
 ```
 
 Here, the process we specified is "5:100" which means it should consist of 5
 instructions, and the chances that each instruction is a CPU instruction are
-100%. 
+100%.
 
 You can see what happens to the process by using the -c flag, which computes the
 answers for you:
@@ -210,7 +210,7 @@ that a single instruction to handle I/O initiation and completion is not
 particularly realistic, but just used here for simplicity.
 
 Let's print some stats (run the same command as above, but with the -p flag)
-to see some overall behaviors: 
+to see some overall behaviors:
 
 ```sh
 Stats: Total Time 21
@@ -225,7 +225,7 @@ that is a better use of resources.
 
 There are a few other important flags:
 ```sh
-  -s SEED, --seed=SEED  the random seed  
+  -s SEED, --seed=SEED  the random seed
     this gives you way to create a bunch of different jobs randomly
 
   -L IO_LENGTH, --iolength=IO_LENGTH
@@ -235,18 +235,163 @@ There are a few other important flags:
                         when to switch between processes: SWITCH_ON_IO, SWITCH_ON_END
     this determines when we switch to another process:
     - SWITCH_ON_IO, the system will switch when a process issues an IO
-    - SWITCH_ON_END, the system will only switch when the current process is done 
+    - SWITCH_ON_END, the system will only switch when the current process is done
 
   -I IO_DONE_BEHAVIOR, --iodone=IO_DONE_BEHAVIOR
                         type of behavior when IO ends: IO_RUN_LATER, IO_RUN_IMMEDIATE
     this determines when a process runs after it issues an IO:
     - IO_RUN_IMMEDIATE: switch to this process right now
-    - IO_RUN_LATER: switch to this process when it is natural to 
+    - IO_RUN_LATER: switch to this process when it is natural to
       (e.g., depending on process-switching behavior)
 ```
 
 Now go answer the questions at the back of the chapter to learn more, please.
 
+James' Homework:
+Only wrong answers are specificed, otherwise I got them right :^)
 
+1. python3 ./process-run.py -l 5:100,5:100
+CPU Utilization?
+- 100%
 
+2. python3 ./process-run.py -l 4:100,1:0 (implied wait of 5)
+Total time?
+cpu x 4 = 4
+        +
+I/O x 1 = 1
+        +
+Wait x 5 = 5
+        +
+I/O done x 1 = 1
 
+        = 4 + 1 + 5 + 1 = 11
+
+3. python3 ./process-run.py -l 1:0,4:100 (implied wait of 5)
+
+1.    I/O   ready   cpu:1
+2.    Blocked   running   cpu:1    I/O: 1
+3.    Blocked   running   cpu:1    I/O: 1
+4.    Blocked   running   cpu:1    I/O: 1
+5.    Blocked   running   cpu:1    I/O: 1
+6.    Blocked   DONE      cpu:0    I/O: 1
+7.    I/O_done  DONE      cpu:1
+
+Time: 7
+
+4. python3 ./process-run.py -l 1:0,4:100 -S SWITCH_ON_END (will wait until I/O is complete to switch process) (implied wait of 5)
+
+1.    I/O   ready   cpu:1 I/O: 0
+2.    Blocked   ready      cpu:0    I/O: 1
+3.    Blocked   ready      cpu:0    I/O: 1
+4.    Blocked   ready      cpu:0    I/O: 1
+5.    Blocked   ready      cpu:0    I/O: 1
+6.    Blocked   ready      cpu:0    I/O: 1
+7.    I/O_done  ready      cpu:1    I/O: 0
+8.    DONE      running    cpu:1    I/0: 0
+9.    DONE      running    cpu:1    I/0: 0
+10.   DONE      running    cpu:1    I/0: 0
+11.   DONE      running    cpu:1    I/0: 0
+
+5. python3 ./process-run.py -l 1:0,4:100 -S SWITCH_ON_IO
+(Will switch whenever another process is waiting) (implied wait of 5)
+
+1.    I/O       ready        cpu:1    I/O: 0
+2.    Blocked   running      cpu:1    I/O: 1
+3.    Blocked   running      cpu:1    I/O: 1
+4.    Blocked   running      cpu:1    I/O: 1
+5.    Blocked   running      cpu:1    I/O: 1
+6.    Blocked   DONE         cpu:0    I/O: 1
+7.    I/O_done  DONE         cpu:1    I/O: 0
+
+6. python3 ./process-run.py -l 3:0,5:100,5:100,5:100 -S SWITCH_ON_IO -I IO_RUN_LATER
+(Will switch whenever another process is waiting) (After an IO, other processes will finish
+before switching back to finished IO) (implied wait of 5)
+
+My Guess: wrong
+Forgot the second and third I/O runs, but they would have been appended to the end by my logic.
+In reality, the first I/O_done wouldn't be executed until after PID 3 is finished, meaning
+the processes are executed all the way down the line before returning to the first one (PID 0).
+I wonder if process scheduling handles this explicity in the future.
+1.    I/O       ready     ready   ready   cpu:1    I/O: 0
+2.    Blocked   running   ready   ready   cpu:1    I/O: 1
+3.    Blocked   running   ready   ready   cpu:1    I/O: 1
+4.    Blocked   running   ready   ready   cpu:1    I/O: 1
+5.    Blocked   running   ready   ready   cpu:1    I/O: 1
+6.    Blocked   running   ready   ready   cpu:1    I/O: 1
+7.    I/O_done  DONE      ready   ready   cpu:1    I/O: 0
+8.    DONE      DONE      running ready   cpu:1    I/O: 0
+9.    DONE      DONE      running ready   cpu:1    I/O: 0
+10.   DONE      DONE      running ready   cpu:1    I/O: 0
+11.   DONE      DONE      running ready   cpu:1    I/O: 0
+12.   DONE      DONE      running ready   cpu:1    I/O: 0
+13.   DONE      DONE      DONE    running cpu:1    I/O: 0
+14.   DONE      DONE      DONE    running cpu:1    I/O: 0
+15.   DONE      DONE      DONE    running cpu:1    I/O: 0
+16.   DONE      DONE      DONE    running cpu:1    I/O: 0
+17.   DONE      DONE      DONE    running cpu:1    I/O: 0
+
+System resources are used inefficiently because the second and third I/O processes
+are run without other processes to run during the blocked period. I suspect if you
+switch back on I/O finish to start a new I/O, it is much more efficient because then
+you can go back to the CPU processes in the mean time.
+
+7. python3 ./process-run.py -l 3:0,5:100,5:100,5:100 -S SWITCH_ON_IO -I IO_RUN_IMMEDIATE
+(Will switch whenever another process is waiting) (Will switch back
+to an I/O when it finishes.) (implied wait of 5)
+
+1.    I/O       ready     ready   ready   cpu:1    I/O: 0
+2.    Blocked   running   ready   ready   cpu:1    I/O: 1
+3.    Blocked   running   ready   ready   cpu:1    I/O: 1
+4.    Blocked   running   ready   ready   cpu:1    I/O: 1
+5.    Blocked   running   ready   ready   cpu:1    I/O: 1
+6.    Blocked   running   ready   ready   cpu:1    I/O: 1
+7.    I/O_done  DONE      ready   ready   cpu:1    I/O: 0
+8.    I/O       DONE      ready   ready   cpu:1    I/O: 0
+9.    Blocked   DONE      running ready   cpu:1    I/O: 1
+10.   Blocked   DONE      running ready   cpu:1    I/O: 1
+11.   Blocked   DONE      running ready   cpu:1    I/O: 1
+12.   Blocked   DONE      running ready   cpu:1    I/O: 1
+13.   Blocked   DONE      running ready   cpu:1    I/O: 1
+14.   I/O_done  DONE      DONE    ready   cpu:1    I/O: 0
+15.   I/O       DONE      DONE    ready   cpu:1    I/O: 0
+16.   Blocked   DONE      DONE    running cpu:1    I/O: 1
+17.   Blocked   DONE      DONE    running cpu:1    I/O: 1
+18.   Blocked   DONE      DONE    running cpu:1    I/O: 1
+19.   Blocked   DONE      DONE    running cpu:1    I/O: 1
+20.   Blocked   DONE      DONE    running cpu:1    I/O: 1
+21.   I/O_done  DONE      DONE    DONE    cpu:1    I/O: 0
+
+This is efficient because it allows the I/O process to start a new I/O
+asap, maximizing the amount of time an I/O is running at the same time
+as a CPU.
+
+8. python3 ./process-run.py -s 1 -l 3:50,3:50 (random seed of 1 for chance jobs)
+
+Processes:
+Process 0
+  cpu
+  io
+  io_done
+  io
+  io_done
+
+Process 1
+  cpu
+  cpu
+  cpu
+
+1.  running   ready   cpu:1   I/O:0
+2.  I/O       ready   cpu:1   I/O:0
+3.  blocked   running cpu:1   I/O:1
+4.  blocked   running cpu:1   I/O:1
+5.  blocked   running cpu:1   I/O:1
+6.  blocked   DONE    cpu:0   I/O:1
+7.  blocked   DONE    cpu:0   I/O:1
+8.  I/O_done  DONE    cpu:1   I/O:0
+9.  I/O       DONE    cpu:1   I/O:0
+10. blocked   DONE    cpu:0   I/O:1
+11. blocked   DONE    cpu:0   I/O:1
+12. blocked   DONE    cpu:0   I/O:1
+13. blocked   DONE    cpu:0   I/O:1
+14. blocked   DONE    cpu:0   I/O:1
+15. I/O_done  DONE    cpu:1   I/O:0
