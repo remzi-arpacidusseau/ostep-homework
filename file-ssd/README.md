@@ -59,7 +59,7 @@ FTL    10: 10
 Block 0          1          2
 Page  0000000000 1111111111 2222222222
       0123456789 0123456789 0123456789
-State viiiiiiiii iiiiiiiiii iiiiiiiiii
+State iiiiiiiiii viiiiiiiii iiiiiiiiii
 Data             a
 Live             +
 ```
