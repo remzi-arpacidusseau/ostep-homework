@@ -111,7 +111,7 @@ The next line shows the state of each page, i.e., whether it is INVALID (i),
 ERASED (E), or VALID (v), as per the chapter:
 
 ```sh
-State viiiiiiiii iiiiiiiiii iiiiiiiiii
+State iiiiiiiiii viiiiiiiii iiiiiiiiii
 ```
 
 The states for the "ideal" SSD are a bit weird, in that you can have "v" and
