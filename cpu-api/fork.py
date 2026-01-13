@@ -320,8 +320,8 @@ parser.add_option('-c', '--compute', help='compute answers for me', action='stor
 
 (options, args) = parser.parse_args()
 
-if options.seed != -1:
-    random_seed(options.seed)
+# Always set the random seed for reproducibility
+random_seed(options.seed)    
 
 if options.fork_percentage <= 0.001:
     print('fork_percentage must be > 0.001')
