@@ -287,12 +287,12 @@ class file_system:
         self.dir_data[parent_inode_number].remove((name, inode_number))
 
         for b in self.inode_blocks[inode_number]:
-            data_group = int(b / self.num_groups)
-            data_index = b % self.num_groups
+            data_group = int(b / self.blocks_per_group)
+            data_index = b % self.blocks_per_group
             self.data_bitmap[data_group][data_index] = self.BITMAP_FREE
 
-        inode_group = int(inode_number / self.num_groups)
-        inode_index = inode_number % self.num_groups
+        inode_group = int(inode_number / self.inodes_per_group)
+        inode_index = inode_number % self.inodes_per_group
         self.inode_bitmap[inode_group][inode_index] = self.BITMAP_FREE
         self.free_symbol(inode_number)
 
