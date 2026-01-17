@@ -45,11 +45,14 @@ prompt> ./checksum.py -s 1
 
 OPTIONS seed 1
 OPTIONS data_size 4
-OPTIONS data
+OPTIONS data 
 
-Decimal:           34        216        195         65
-Hex:             0x22       0xd8       0xc3       0x41
-Bin:       0b00100010 0b11011000 0b11000011 0b01000001
+  Decimal:     Hex:     Bin:    
+        34     0x22     0b00100010
+       216     0xd8     0b11011000
+       195     0xc3     0b11000011
+        65     0x41     0b01000001
+
 
 Add:      ?
 Xor:      ?
@@ -61,21 +64,39 @@ prompt>
 You can specify a different length for the random data:
 
 ```sh
-prompt> ./checksum.py -D 2
+prompt> ./checksum.py -d 2
 
-...
+OPTIONS seed 0
+OPTIONS data_size 2
+OPTIONS data 
+
+  Decimal:     Hex:     Bin:    
+       216     0xd8     0b11011000
+       194     0xc2     0b11000010
+
+
+Add:      ?
+Xor:      ?
+Fletcher: ?
+
+prompt> 
+```
 
 You can also specify your own data string:
 
+```sh
 prompt> ./checksum.py -D 1,2,3,4
 
 OPTIONS seed 0
 OPTIONS data_size 4
 OPTIONS data 1,2,3,4
 
-Decimal:            1          2          3          4
-Hex:             0x01       0x02       0x03       0x04
-Bin:       0b00000001 0b00000010 0b00000011 0b00000100
+  Decimal:     Hex:     Bin:    
+         1     0x01     0b00000001
+         2     0x02     0b00000010
+         3     0x03     0b00000011
+         4     0x04     0b00000100
+
 
 Add:      ?
 Xor:      ?
@@ -93,9 +114,12 @@ OPTIONS seed 0
 OPTIONS data_size 4
 OPTIONS data 1,2,3,4
 
-Decimal:            1          2          3          4
-Hex:             0x01       0x02       0x03       0x04
-Bin:       0b00000001 0b00000010 0b00000011 0b00000100
+  Decimal:     Hex:     Bin:    
+         1     0x01     0b00000001
+         2     0x02     0b00000010
+         3     0x03     0b00000011
+         4     0x04     0b00000100
+
 
 Add:             10       (0b00001010)
 Xor:              4       (0b00000100)
