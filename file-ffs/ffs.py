@@ -1,7 +1,6 @@
 #! /usr/bin/env python
 
 from __future__ import print_function
-import math
 import sys
 from optparse import OptionParser
 import random
@@ -486,32 +485,23 @@ class file_system:
         fd.close()
         return
 
+
+    def add_spaces(self, s):
+        """Insert spaces every 10 characters for printing."""
+
+        l = [s[i:i+10] for i in range(0, len(s), 10)]
+        return ' '.join(l)
+
     def list_to_string(self, bitmap):
-        out_str = ''
-        for i in range(len(bitmap)):
-            if i > 0 and i % 10 == 0:
-                out_str += ' '
-            if bitmap[i] == self.BITMAP_FREE:
-                out_str += '-'
-            else:
-                out_str += '%s' % self.get_symbol(bitmap[i])
-        return out_str
+        out_l = ['-' if v == self.BITMAP_FREE
+                 else '%s' % self.get_symbol(v)
+                 for v in bitmap]
+        return self.add_spaces(''.join(out_l))
 
     def do_numeric_header(self, power_level, how_many):
-        power = int(math.pow(10, power_level))
-        counter = 0
-        value = 0
-        out_str = ''
-        for i in range(how_many):
-            if i > 0 and i % 10 == 0:
-                out_str += ' '
-            out_str += '%d' % (value % 10)
-            counter += 1
-            if counter == power:
-                value += 1
-                counter = 0
-        print(out_str, end='')
-        return
+        power = 10 ** power_level
+        out_l = ['%d' % ((i // power) % 10) for i in range(how_many)]
+        print(self.add_spaces(''.join(out_l)), end='')
 
     def dump(self):
         print('')
@@ -536,12 +526,13 @@ class file_system:
             max_power = data_power
         
         while max_power >= 0:
-            print('     ', end='') # spacing before inode print out
+            print(' ' * len("group "), end='') # spacing before inode print out
             if inode_power >= max_power:
                 self.do_numeric_header(max_power, self.inodes_per_group)
             else:
                 out_str = ' ' * self.inodes_per_group
                 print(out_str, end='')
+            print(' ', end='') # space between inode and data print out
 
             if data_power >= max_power:
                 self.do_numeric_header(max_power, self.blocks_per_group)
@@ -573,8 +564,8 @@ class file_system:
                     print('')
             else:
                 print('  %3d %s %s' % (i,
-                                       '?' * self.inodes_per_group,
-                                       '?' * self.blocks_per_group))
+                                       self.add_spaces('?' * self.inodes_per_group),
+                                       self.add_spaces('?' * self.blocks_per_group)))
                 
             count += self.group_size
 
