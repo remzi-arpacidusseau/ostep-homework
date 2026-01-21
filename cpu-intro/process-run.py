@@ -153,12 +153,12 @@ class scheduler:
         return num_active
 
     def get_num_runnable(self):
-        num_active = 0
+        num_runnable = 0
         for pid in range(len(self.proc_info)):
             if self.proc_info[pid][PROC_STATE] == STATE_READY or \
                    self.proc_info[pid][PROC_STATE] == STATE_RUNNING:
-                num_active += 1
-        return num_active
+                num_runnable += 1
+        return num_runnable
 
     def get_ios_in_flight(self, current_time):
         num_in_flight = 0
