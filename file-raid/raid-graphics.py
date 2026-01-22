@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-from Tkinter import *
+from tkinter import *
 from types import *
 import math, random, time, sys, os
 from optparse import OptionParser
@@ -86,7 +86,7 @@ class Request:
             return 'REQ_PARITY_READ_PHASE_DONE'
         if status == REQ_PARITY_WRITE_PHASE_BEGIN:
             return 'REQ_PARITY_WRITE_PHASE_BEGIN'
-        print 'BAD STATUS', status
+        print('BAD STATUS', status)
         exit(1)
         return
 
@@ -292,7 +292,7 @@ class Raid:
                 self.disk_and_offset_to_rect_id[(disk, offset)] = rect_id
             
         else:
-            print 'mapping', self.mapping, 'not supported'
+            print('mapping', self.mapping, 'not supported')
             exit(1)
 
         # now draw "disk heads"
@@ -345,7 +345,7 @@ class Raid:
             if self.balance:
                 disk_min = num / effective_disk_count
             if req_min >= req_max:
-                print 'bad addr_desc: min should be lower than max', req_min, req_max
+                print('bad addr_desc: min should be lower than max', req_min, req_max)
                 exit(1)
             target_disk = 0
             for i in range(num):
@@ -373,7 +373,7 @@ class Raid:
                 elif tmp[i][0] == 'w':
                     self.request_queue[i] = Request(int(tmp[i].replace('w','')), OP_WRITE)
                 else:
-                    print 'Must specify reads vs writes, e.g., r10 or w6'
+                    print('Must specify reads vs writes, e.g., r10 or w6')
                     exit(1)
 
         self.request_count_needed = len(self.request_queue)
@@ -882,9 +882,9 @@ class Raid:
         return
 
     def PrintStats(self):
-        print 'Total Time:   ', self.timer
-        print '  Requests:   ', self.logical_requests
-        print '  Avg Latency: %.2f' % (float(self.latency_total) / float(self.logical_requests))
+        print('Total Time:   ', self.timer)
+        print('  Requests:   ', self.logical_requests)
+        print('  Avg Latency: %.2f' % (float(self.latency_total) / float(self.logical_requests)))
         return
         
 # END: class Disk
@@ -911,20 +911,20 @@ parser.add_option('-P', '--print_options',   default=False,       help='Print th
 (options, args) = parser.parse_args()
 
 if options.print_options:
-    print 'OPTIONS seed', options.seed
-    print 'OPTIONS addr', options.addr
-    print 'OPTIONS addr_desc', options.addr_desc
-    print 'OPTIONS seek_speed', options.seek_speed
-    print 'OPTIONS window', options.window
-    print 'OPTIONS policy', options.policy
-    print 'OPTIONS compute', options.compute
-    print 'OPTIONS read_fraction', options.read_fraction
-    print 'OPTIONS graphics', options.graphics
-    print 'OPTIONS animate_delay', options.animate_delay
-    print ''
+    print('OPTIONS seed', options.seed)
+    print('OPTIONS addr', options.addr)
+    print('OPTIONS addr_desc', options.addr_desc)
+    print('OPTIONS seek_speed', options.seek_speed)
+    print('OPTIONS window', options.window)
+    print('OPTIONS policy', options.policy)
+    print('OPTIONS compute', options.compute)
+    print('OPTIONS read_fraction', options.read_fraction)
+    print('OPTIONS graphics', options.graphics)
+    print('OPTIONS animate_delay', options.animate_delay)
+    print('')
 
 if options.window == 0:
-    print 'Scheduling window (%d) must be positive or -1 (which means a full window)' % options.window
+    print('Scheduling window (%d) must be positive or -1 (which means a full window)' % options.window)
     sys.exit(1)
 
 # set up simulator info
