@@ -50,6 +50,7 @@ int main(int argc, char *argv[]) {
     Pthread_create(&p, NULL, worker, NULL);
     signal_wait(&s);
     printf("this should print last\n");
+    Pthread_join(p, NULL);
 
     return 0;
 }
