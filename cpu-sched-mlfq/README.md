@@ -125,11 +125,11 @@ IO DONE
 ...
 
 Final statistics:
-  Job  0: startTime   0 - response   0 - turnaround 175
-  Job  1: startTime   0 - response   7 - turnaround 191
-  Job  2: startTime   0 - response   9 - turnaround 168
+  Job  0: startTime   0 - response   0 - turnaround 180
+  Job  1: startTime   0 - response   7 - turnaround 161
+  Job  2: startTime   0 - response  10 - turnaround 171
 
-  Avg  2: startTime n/a - response 5.33 - turnaround 178.00
+  Avg  2: startTime n/a - response 5.67 - turnaround 170.67
 ```
 
 The trace shows exactly, on a millisecond-by-millisecond time scale, what the
