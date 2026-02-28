@@ -481,8 +481,12 @@ class fs:
         for i in range(numRequests):
             if printOps == False:
                 print('Which operation took place?')
+            error = False
             rc = -1
-            while rc == -1:
+            while rc == -1 and not error:
+                if self.ibitmap.numFree() == 0 or self.dbitmap.numFree() == 0:
+                    error = True
+                    break
                 r = random.random()
                 if r < 0.3:
                     rc = self.doAppend()
@@ -500,12 +504,7 @@ class fs:
                     else:
                         rc = self.doCreate('d')
                         dprint('doCreate(d) rc:%d' % rc)
-                if self.ibitmap.numFree() == 0:
-                    print('File system out of inodes; rerun with more via command-line flag?')
-                    exit(1)
-                if self.dbitmap.numFree() == 0:
-                    print('File system out of data blocks; rerun with more via command-line flag?')
-                    exit(1)
+                
             if printState == True:
                 print('')
                 self.dump()
@@ -514,6 +513,13 @@ class fs:
                 print('')
                 print('  State of file system (inode bitmap, inodes, data bitmap, data)?')
                 print('')
+            if i < numRequests-1: #if we're done, it doesn't matter that we're out of space
+                if self.ibitmap.numFree() == 0:
+                    print('File system out of inodes; rerun with more via command-line flag?')
+                    exit(1)
+                if self.dbitmap.numFree() == 0:
+                    print('File system out of data blocks; rerun with more via command-line flag?')
+                    exit(1)
 
         if printFinal:
             print('')
@@ -526,52 +532,53 @@ class fs:
 #
 # main program
 #
-parser = OptionParser()
+if __name__ == '__main__':
+    parser = OptionParser()
 
-parser.add_option('-s', '--seed',        default=0,     help='the random seed',                      action='store', type='int', dest='seed')
-parser.add_option('-i', '--numInodes',   default=8,     help='number of inodes in file system',      action='store', type='int', dest='numInodes') 
-parser.add_option('-d', '--numData',     default=8,     help='number of data blocks in file system', action='store', type='int', dest='numData') 
-parser.add_option('-n', '--numRequests', default=10,    help='number of requests to simulate',       action='store', type='int', dest='numRequests')
-parser.add_option('-r', '--reverse',     default=False, help='instead of printing state, print ops', action='store_true',        dest='reverse')
-parser.add_option('-p', '--printFinal',  default=False, help='print the final set of files/dirs',    action='store_true',        dest='printFinal')
-parser.add_option('-c', '--compute',     default=False, help='compute answers for me',               action='store_true',        dest='solve')
+    parser.add_option('-s', '--seed',        default=0,     help='the random seed',                      action='store', type='int', dest='seed')
+    parser.add_option('-i', '--numInodes',   default=8,     help='number of inodes in file system',      action='store', type='int', dest='numInodes') 
+    parser.add_option('-d', '--numData',     default=8,     help='number of data blocks in file system', action='store', type='int', dest='numData') 
+    parser.add_option('-n', '--numRequests', default=10,    help='number of requests to simulate',       action='store', type='int', dest='numRequests')
+    parser.add_option('-r', '--reverse',     default=False, help='instead of printing state, print ops', action='store_true',        dest='reverse')
+    parser.add_option('-p', '--printFinal',  default=False, help='print the final set of files/dirs',    action='store_true',        dest='printFinal')
+    parser.add_option('-c', '--compute',     default=False, help='compute answers for me',               action='store_true',        dest='solve')
 
-(options, args) = parser.parse_args()
+    (options, args) = parser.parse_args()
 
-print('ARG seed',        options.seed)
-print('ARG numInodes',   options.numInodes)
-print('ARG numData',     options.numData)
-print('ARG numRequests', options.numRequests)
-print('ARG reverse',     options.reverse)
-print('ARG printFinal',  options.printFinal)
-print('')
+    print('ARG seed',        options.seed)
+    print('ARG numInodes',   options.numInodes)
+    print('ARG numData',     options.numData)
+    print('ARG numRequests', options.numRequests)
+    print('ARG reverse',     options.reverse)
+    print('ARG printFinal',  options.printFinal)
+    print('')
 
-random_seed(options.seed)
+    random_seed(options.seed)
 
-if options.reverse:
-    printState = False
-    printOps   = True
-else:
-    printState = True
-    printOps   = False
+    if options.reverse:
+        printState = False
+        printOps   = True
+    else:
+        printState = True
+        printOps   = False
 
-if options.solve:
-    printOps   = True
-    printState = True
+    if options.solve:
+        printOps   = True
+        printState = True
 
-printFinal = options.printFinal
+    printFinal = options.printFinal
 
-#
-# have to generate RANDOM requests to the file system
-# that are VALID!
-#
+    #
+    # have to generate RANDOM requests to the file system
+    # that are VALID!
+    #
 
-f = fs(options.numInodes, options.numData)
+    f = fs(options.numInodes, options.numData)
 
-#
-# ops: mkdir rmdir : create delete : append write
-#
+    #
+    # ops: mkdir rmdir : create delete : append write
+    #
 
-f.run(options.numRequests)
+    f.run(options.numRequests)
 
 
