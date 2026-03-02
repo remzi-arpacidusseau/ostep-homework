@@ -1,0 +1,33 @@
+file /a 2 
+file /b 2 
+file /c 2 
+file /d 2 
+file /e 2 
+file /f 2 
+file /g 2 
+file /h 2 
+file /i 2 
+
+dir /j 
+dir /t 
+
+file /t/u 3 
+file /j/l 1 
+file /t/v 3 
+file /j/m 1 
+file /t/w 3 
+file /j/n 1 
+file /t/x 3 
+file /j/o 1 
+file /t/y 3 
+file /j/p 1 
+file /t/z 3 
+file /j/q 1 
+file /t/A 3 
+file /j/r 1 
+file /t/B 3 
+file /j/C 3 
+
+
+
+
