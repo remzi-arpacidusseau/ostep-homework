@@ -7,7 +7,7 @@
 // Your code goes in the structure and functions below
 //
 
-typedef struct __rwlock_t {
+typedef struct __rwlock_t {ㅇ
 } rwlock_t;
 
 
