@@ -260,7 +260,7 @@ for i in range(0, options.num):
         else:
             print('      --> Fault (page table entry not valid)')
     else:
-        print('Virtual Address %04x: Translates To What Physical Address (And Fetches what Value)? Or Fault?' % vaddr)
+        print('Virtual Address 0x%04x: Translates To What Physical Address (And Fetches what Value)? Or Fault?' % vaddr)
 
 print('')
 
