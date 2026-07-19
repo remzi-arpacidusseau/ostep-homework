@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 
 from __future__ import print_function
+from array import array
 import sys
 from optparse import OptionParser
 import random
@@ -87,10 +88,9 @@ mustbemultipleof(asize, pagesize, 'address space must be a multiple of the pages
 mustbemultipleof(psize, pagesize, 'physical memory must be a multiple of the pagesize')
 
 # print some useful info, like the darn page table 
-pages = int(psize / pagesize);
-import array
-used = array.array('i')
-pt   = array.array('i')
+pages = int(psize / pagesize)
+used = array('i')
+pt   = array('i')
 for i in range(0,pages):
     used.insert(i,0)
 vpages = int(asize / pagesize)
@@ -130,7 +130,7 @@ for v in range(0,vpages):
                 used[u] = 1
                 done = 1
                 # print('%8d - %d' % (v, u))
-                if options.verbose == True:
+                if options.verbose:
                     print('  [%8d]  ' % v, end='')
                 else:
                     print('  ', end='')
@@ -138,7 +138,7 @@ for v in range(0,vpages):
                 pt.insert(v,u)
         else:
             # print('%8d - not valid' % v)
-            if options.verbose == True:
+            if options.verbose:
                 print('  [%8d]  ' % v, end='')
             else:
                 print('  ', end='')
@@ -166,7 +166,7 @@ print('Virtual Address Trace')
 for vStr in addrList:
     # vaddr = int(asize * random.random())
     vaddr = int(vStr)
-    if options.solve == False:
+    if not options.solve:
         print('  VA 0x%08x (decimal: %8d) --> PA or invalid address?' % (vaddr, vaddr))
     else:
         paddr = 0
@@ -181,7 +181,7 @@ for vStr in addrList:
             print('  VA 0x%08x (decimal: %8d) --> %08x (decimal %8d) [VPN %d]' % (vaddr, vaddr, paddr, paddr, vpn))
 print('')
 
-if options.solve == False:
+if not options.solve:
     print('For each virtual address, write down the physical address it translates to')
     print('OR write down that it is an out-of-bounds address (e.g., segfault).')
     print('')

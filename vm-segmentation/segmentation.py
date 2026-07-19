@@ -1,16 +1,14 @@
 #! /usr/bin/env python
 
 from __future__ import print_function
-import sys
 from optparse import OptionParser
 import random
-import math
 
 # to make Python2 and Python3 act the same -- how dumb
 def random_seed(seed):
     try:
         random.seed(seed, version=1)
-    except:
+    except Exception:
         random.seed(seed)
     return
 
@@ -144,7 +142,7 @@ for vstr in addrList:
     if vaddr < 0 or vaddr >= asize:
         print('Error: virtual address %d cannot be generated in an address space of size %d' % (vaddr, asize))
         exit(1)
-    if options.solve == False:
+    if not options.solve:
         print('  VA %2d: 0x%08x (decimal: %4d) --> PA or segmentation violation?' % (i, vaddr, vaddr))
     else:
         paddr = 0
@@ -167,7 +165,7 @@ for vstr in addrList:
 
 print('')
 
-if options.solve == False:
+if not options.solve:
     print('For each virtual address, either write down the physical address it translates to')
     print('OR write down that it is an out-of-bounds address (a segmentation violation). For')
     print('this problem, you should assume a simple address space with two segments: the top')
