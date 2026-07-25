@@ -135,8 +135,8 @@ This instruction takes two arguments and compares them; it then sets implicit
 can act upon.
 
 In this case, the other new instruction is the `jump` instruction (in this
-case, `jgte` which stands for "jump if greater than or equal to"). This
-instruction jumps if the second value is greater than or equal to the first
+case, `jgt` which stands for "jump if greater than"). This
+instruction jumps if the second value is greater than to the first
 in the test.
 
 One last point: to really make this code work, dx must be initialized to 1 or
@@ -151,13 +151,13 @@ prompt> ./x86.py -p loop.s -t 1 -a dx=3 -R dx -C -c
     3   0  0  0  0  0  0
     2   0  0  0  0  0  0  1000 sub  $1,%dx
     2   1  1  0  0  1  0  1001 test $0,%dx
-    2   1  1  0  0  1  0  1002 jgte .top
+    2   1  1  0  0  1  0  1002 jgt .top
     1   1  1  0  0  1  0  1000 sub  $1,%dx
     1   1  1  0  0  1  0  1001 test $0,%dx
-    1   1  1  0  0  1  0  1002 jgte .top
+    1   1  1  0  0  1  0  1002 jgt .top
     0   1  1  0  0  1  0  1000 sub  $1,%dx
     0   1  0  1  0  0  1  1001 test $0,%dx
-    0   1  0  1  0  0  1  1002 jgte .top
+    0   1  0  1  0  0  1  1002 jgt .top
     0   1  0  1  0  0  1  1003 halt
 ```
 
