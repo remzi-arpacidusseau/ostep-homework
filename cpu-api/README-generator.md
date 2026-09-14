@@ -36,8 +36,8 @@ int fork_or_die() {
 int main(int argc, char *argv[]) {
     // process a
     if (fork_or_die() == 0) {
-        sleep(6);
         // process b
+        sleep(6);
         exit(0);
     }
     wait_or_die();
@@ -67,7 +67,7 @@ will refer to as "process a" (or just "a" for short) start, call
 process to complete (by calling `wait_or_die()`).
 
 The child process (called "b") just sleeps for some period of time
-(here, 4 seconds) and then exits.
+(here, 6 seconds) and then exits.
 
 The challenge for you, then, is to predict what the output will look
 like when this program runs. As usual, we can get the result simply by
@@ -77,7 +77,7 @@ using the `-c` flag:
 prompt> ./generator.py -n 1 -s 0 -c
   0 a+
   0 a->b
-  6      b+
+  0      b+
   6      b-
   6 a<-b
 prompt> 
@@ -89,11 +89,9 @@ events that happen at time 0. First, process a starts running (shown
 by `a+`); then, a forks and creates b (shown by `a->b`).
 
 Then, b starts running and immediately sleeps for 6 seconds, as shown
-in the code. Once this sleep is done, b prints that it has been
-created (`b+`), but it doesn't do much; in fact, it just exits, which
-is shown as well (`b-`). These are shown to both happen at time 6 in
-the output; however, in reality, we know that `b+` happens just before
-`b-`.
+in the code. Before this sleep is started, b prints that it has been
+created (`b+`). After sleep is done b doesn't do much; in fact, it just exits,
+which is shown as well (`b-`).
 
 Finally, once b has exited, the `wait_or_die()` call in its parent
 process, a, returns, and then a final print out takes place (`a<-b`)
@@ -124,8 +122,8 @@ The resulting C code:
 int main(int argc, char *argv[]) {
     // process a
     if (fork_or_die() == 0) {
-        sleep(1);
         // process b
+        sleep(1);
         exit(0);
     }
     wait_or_die();
