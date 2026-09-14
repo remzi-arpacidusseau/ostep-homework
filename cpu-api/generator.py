@@ -214,8 +214,8 @@ class CodeGeneratorReadable:
                 # fork thread_id sleep_time
                 assert(len(tmp) == 3)
                 self.add_fork()
-                self.add_sleep(tmp[2])
                 self.add_thread(tmp[1])
+                self.add_sleep(tmp[2])
             elif tmp[0] == 'exit':
                 assert(len(tmp) == 1)
                 self.add_exit()
@@ -311,8 +311,8 @@ class CodeGeneratorRunnable:
                 # fork thread_id sleep_time
                 assert(len(tmp) == 3)
                 self.add_fork(tmp[1], tmp[2])
-                self.add_sleep(tmp[2])
                 self.add_thread(tmp[1])
+                self.add_sleep(tmp[2])
             elif tmp[0] == 'exit':
                 assert(len(tmp) == 1)
                 self.add_exit()
