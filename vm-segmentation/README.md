@@ -166,9 +166,9 @@ address space set in a 32-MB physical memory, you might type:
 Example:
 ./segmentation.py -a 128 -p 512 -b 0 -l 20 -B 512 -L 20 -A 19,20,107,108
 
-This tests question 2. for the edges of both segment 0(Base 0 - Limit 20) and segment 1(Base Max Virtual Address space - Limit 20 but growing up toward lower virtuall addresses)
+Tests Question 2 by checking boundary addresses for Segment 0 (Base 0, Limit 20) and Segment 1 (Base Max Virtual Address, Limit 20, growing downward toward lower virtual addresses).
 
-Try running this without the -c flag and see if you can figure out the virtual addresses listed in -A, which ones are legal and which ones are not.
+Try running this without the -c flag to determine which virtual addresses in -A are legal vs. out-of-bounds.
 ****
 
 ```sh
