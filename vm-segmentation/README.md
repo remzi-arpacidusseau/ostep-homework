@@ -13,8 +13,8 @@ Visually, the address space looks like this:
 
 ```
  --------------- virtual address 0
- |    seg0     |
- |             |
+ |    seg0     |  
+ |             |  
  |             |
  |-------------|
  |             |
@@ -26,8 +26,8 @@ Visually, the address space looks like this:
  |             |
  |             |
  |-------------|
- |             |
- |    seg1     |
+ |             |    ^
+ |    seg1     |    |
  |-------------| virtual address max (size of address space)
 ```
 
@@ -160,6 +160,16 @@ Note you can specify bigger values by tacking a "k", "m", or even "g" onto the
 values you pass in with the -a or -p flags, as in "kilobytes", "megabytes",
 and "gigabytes". Thus, if you wanted to do some translations with a 1-MB
 address space set in a 32-MB physical memory, you might type:
+
+***
+-A FLAG:
+Example:
+./segmentation.py -a 128 -p 512 -b 0 -l 20 -B 512 -L 20 -A 19,20,107,108
+
+This tests question 2. for the edges of both segment 0(Base 0 - Limit 20) and segment 1(Base Max Virtual Address space - Limit 20 but growing up toward lower virtuall addresses)
+
+Try running this without the -c flag and see if you can figure out the virtual addresses listed in -A, which ones are legal and which ones are not.
+****
 
 ```sh
 prompt> ./segmentation.py -a 1m -p 32m
